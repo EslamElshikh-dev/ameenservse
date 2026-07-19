@@ -78,6 +78,44 @@
     });
   });
 
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  if (!reducedMotion.matches && "IntersectionObserver" in window) {
+    const revealGroups = [
+      ".section-heading",
+      ".category-heading",
+      ".service-card",
+      ".why-copy",
+      ".process-card",
+      ".area-heading",
+      ".map-shell",
+      ".faq-intro",
+      ".accordion details",
+      ".contact-panel",
+      ".footer-main > *",
+      ".developer-signature"
+    ];
+    const revealElements = [...document.querySelectorAll(revealGroups.join(","))];
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-visible");
+          revealObserver.unobserve(entry.target);
+        });
+      },
+      {
+        rootMargin: "0px 0px -8% 0px",
+        threshold: 0.08
+      }
+    );
+
+    revealElements.forEach((element, index) => {
+      element.classList.add("reveal");
+      element.style.setProperty("--reveal-delay", `${(index % 4) * 55}ms`);
+      revealObserver.observe(element);
+    });
+  }
+
   const year = document.querySelector("#current-year");
   if (year) year.textContent = String(new Date().getFullYear());
 
