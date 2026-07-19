@@ -8,6 +8,18 @@
   const sectionLinks = navigationLinks
     .map((link) => ({ link, section: document.querySelector(link.getAttribute("href")) }))
     .filter(({ section }) => section);
+  const mobileNavigationLinks = [
+    ...document.querySelectorAll('.mobile-bottom-nav a[href^="#"]')
+  ];
+  const mobileSectionLinks = mobileNavigationLinks
+    .map((link) => {
+      const target = link.getAttribute("href");
+      const section = target === "#top"
+        ? document.querySelector(".hero")
+        : document.querySelector(target);
+      return { link, section };
+    })
+    .filter(({ section }) => section);
 
   const setMenuState = (isOpen) => {
     if (!menuButton || !navigation) return;
@@ -68,6 +80,31 @@
     sectionLinks.forEach(({ section }) => observer.observe(section));
   }
 
+  if ("IntersectionObserver" in window && mobileSectionLinks.length) {
+    const mobileObserver = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (!visible) return;
+
+        mobileSectionLinks.forEach(({ link, section }) => {
+          const active = section === visible.target;
+          link.classList.toggle("is-active", active);
+          if (active) link.setAttribute("aria-current", "location");
+          else link.removeAttribute("aria-current");
+        });
+      },
+      {
+        rootMargin: "-25% 0px -62% 0px",
+        threshold: [0, 0.05, 0.15]
+      }
+    );
+
+    mobileSectionLinks.forEach(({ section }) => mobileObserver.observe(section));
+  }
+
   const detailsItems = [...document.querySelectorAll(".accordion details")];
   detailsItems.forEach((item) => {
     item.addEventListener("toggle", () => {
@@ -88,6 +125,7 @@
       ".process-card",
       ".area-heading",
       ".map-shell",
+      ".neighborhoods-panel",
       ".faq-intro",
       ".accordion details",
       ".contact-panel",
