@@ -23,6 +23,4 @@
 
 ## التطوير
 
-تم التصميم والتطوير بواسطة [المهندس إسلام الشيخ](https://eslam-elshikh.com/).
-
-Cybersecurity Engineer | Web Developer | Google Product Expert
+تم التصميم والتطوير بواسطة [المهندس إسلام الشيخ](https://www.eslam-elshikh.com/).
