@@ -1,0 +1,298 @@
+{
+  "photos": [
+    {
+      "key": "plumbing-network",
+      "sourcePhoto": 13,
+      "sourceUrl": "https://lh3.googleusercontent.com/M3AM6aapIJALXOVudu8c3g46rwuGWLOgvY8ZuCwPUf55CEo_w6oCRZEhmdY_oirw34aKIHfnJBnWJdkc1A=s0",
+      "sourceProfile": "https://www.google.com/maps?cid=809316932329652691",
+      "alt": "تمديدات وتوزيع مياه ظاهرة من صور ملف أمين سرور",
+      "position": "centre",
+      "src": "assets/services/plumbing-network.webp",
+      "small": "assets/services/plumbing-network-480.webp"
+    },
+    {
+      "key": "drain-repair",
+      "sourcePhoto": 83,
+      "sourceUrl": "https://lh3.googleusercontent.com/ZSr4kF8g2kSdTS3DgSWTqqGQRoh_VuA34pGH9wD-QTQ1wfuaRnij5gHrj-dUcGTVmFAJo1nZcobBNa8U=s0",
+      "sourceProfile": "https://www.google.com/maps?cid=809316932329652691",
+      "alt": "وصلات ومواسير صرف أثناء أعمال السباكة من صور النشاط",
+      "position": "centre",
+      "src": "assets/services/drain-repair.webp",
+      "small": "assets/services/drain-repair-480.webp"
+    },
+    {
+      "key": "sanitary",
+      "sourcePhoto": 138,
+      "sourceUrl": "https://lh3.googleusercontent.com/LpHnrx6k1oPGhQUG5FWsYNHgRvyXY9xOubICC5EvwiC2Ex9miyrLC18FFUKNorELtbH5NUlFluKCq34R=s0",
+      "sourceProfile": "https://www.google.com/maps?cid=809316932329652691",
+      "alt": "حمام بأدوات صحية ودش من صور ملف أمين سرور",
+      "position": "centre",
+      "src": "assets/services/sanitary.webp",
+      "small": "assets/services/sanitary-480.webp"
+    },
+    {
+      "key": "basins",
+      "sourcePhoto": 60,
+      "sourceUrl": "https://lh3.googleusercontent.com/bodcY9m2lBrHUMssBY8nTpzNQMCllA1sJ3SuLqNysMirTvqry3hyMH299GY2AgUwClJn_hhDW0f_tVg2Dg=s0",
+      "sourceProfile": "https://www.google.com/maps?cid=809316932329652691",
+      "alt": "مغاسل ومرايا بإضاءة محيطية من صور النشاط",
+      "position": "centre",
+      "src": "assets/services/basins.webp",
+      "small": "assets/services/basins-480.webp"
+    },
+    {
+      "key": "water-pump",
+      "sourcePhoto": 113,
+      "sourceUrl": "https://lh3.googleusercontent.com/7Lmro5Tfy3Mc104C9zcmsGWsLnAphSXjWnnz-kMPNhQImonnYRp-hfucDfXF21DvmB5cK3Gm0zCXoPji=s0",
+      "sourceProfile": "https://www.google.com/maps?cid=809316932329652691",
+      "alt": "مضخة مياه وتوصيلاتها من صور ملف أمين سرور",
+      "position": "centre",
+      "src": "assets/services/water-pump.webp",
+      "small": "assets/services/water-pump-480.webp"
+    },
+    {
+      "key": "maintenance-tools",
+      "sourcePhoto": 148,
+      "sourceUrl": "https://lh3.googleusercontent.com/MmnbD5IyPoqhiqk5CrAk6ISsp2MKAtySxb4yuNR60EsMCu_o7AaPx5af30eZ8_a9NpvaI5BIpwXWIPSS=s0",
+      "sourceProfile": "https://www.google.com/maps?cid=809316932329652691",
+      "alt": "معدات وأدوات السباكة والكهرباء المستخدمة في الزيارات من صور النشاط",
+      "position": "centre",
+      "src": "assets/services/maintenance-tools.webp",
+      "small": "assets/services/maintenance-tools-480.webp"
+    },
+    {
+      "key": "electrical-wiring",
+      "sourcePhoto": 109,
+      "sourceUrl": "https://lh3.googleusercontent.com/0pp7DTzE_fK_2x0aJbn9AaILkCnS3UGufF6wwesM-s0HG6IB-UnTvnxiZfXF-PooynbnN98dKWQUgHyR=s0",
+      "sourceProfile": "https://www.google.com/maps?cid=809316932329652691",
+      "alt": "نقاط وأسلاك كهربائية أثناء التمديد من صور النشاط",
+      "position": "centre",
+      "src": "assets/services/electrical-wiring.webp",
+      "small": "assets/services/electrical-wiring-480.webp"
+    },
+    {
+      "key": "electrical-panel",
+      "sourcePhoto": 108,
+      "sourceUrl": "https://lh3.googleusercontent.com/7Lu0o7v49Aavb7H8rtO4fYB3SB63UzhF6JeKGP4oi_TAK6tbBEcrHX8RIOQ8RB1qjO0ieLjooK04_OPO=s0",
+      "sourceProfile": "https://www.google.com/maps?cid=809316932329652691",
+      "alt": "قواطع وتوصيلات لوحة كهرباء من صور ملف أمين سرور",
+      "position": "centre",
+      "src": "assets/services/electrical-panel.webp",
+      "small": "assets/services/electrical-panel-480.webp"
+    },
+    {
+      "key": "switches",
+      "sourcePhoto": 18,
+      "sourceUrl": "https://lh3.googleusercontent.com/0F3HPYri5L2sxRdIkCUbte2bpebkILkd3se7hTqUsVD5pGxV6ZTCR7P_ulWBs7WfWpIR31zIeQ6svwjvaw=s0",
+      "sourceProfile": "https://www.google.com/maps?cid=809316932329652691",
+      "alt": "مقابس ومفاتيح كهربائية من صور النشاط",
+      "position": "centre",
+      "src": "assets/services/switches.webp",
+      "small": "assets/services/switches-480.webp"
+    },
+    {
+      "key": "chandelier",
+      "sourcePhoto": 25,
+      "sourceUrl": "https://lh3.googleusercontent.com/nfSeJ1u7aMSKL0MKdf60b-iXJVM1xlAY1Sce-RAI7j9NH9P65w_ZWCkVzHdIG2pj_ZBgn26oArzhEsaA_g=s0",
+      "sourceProfile": "https://www.google.com/maps?cid=809316932329652691",
+      "alt": "ثريا كريستال مركبة من صور ملف أمين سرور",
+      "position": "north",
+      "src": "assets/services/chandelier.webp",
+      "small": "assets/services/chandelier-480.webp"
+    },
+    {
+      "key": "lighting",
+      "sourcePhoto": 41,
+      "sourceUrl": "https://lh3.googleusercontent.com/-IKzQGfi3VssbdZmvXjvJnjoXs2Keu6w1tTtE4oEC9-675JPmiGLiawbMtdfhHFgHWW3eso_bC-PI4MnpA=s0",
+      "sourceProfile": "https://www.google.com/maps?cid=809316932329652691",
+      "alt": "تجهيزات إنارة خطية وسبوت لايت من صور النشاط",
+      "position": "centre",
+      "src": "assets/services/lighting.webp",
+      "small": "assets/services/lighting-480.webp"
+    }
+  ],
+  "services": {
+    "pipe-repair": {
+      "photo": "drain-repair",
+      "points": [
+        "مياه وصرف",
+        "فحص الوصلات"
+      ]
+    },
+    "toilet-repair": {
+      "photo": "sanitary",
+      "points": [
+        "سيفون وتعبئة",
+        "معالجة التسرب"
+      ]
+    },
+    "showers": {
+      "photo": "sanitary",
+      "points": [
+        "تغذية وتوصيل",
+        "تثبيت وتجربة"
+      ]
+    },
+    "water-heater-installation": {
+      "photo": "maintenance-tools",
+      "points": [
+        "توصيل المياه",
+        "مراجعة التثبيت"
+      ]
+    },
+    "outdoor-plumbing": {
+      "photo": "water-pump",
+      "points": [
+        "مواسير خارجية",
+        "فحص الشبكة"
+      ]
+    },
+    "water-tank-repair": {
+      "photo": "water-pump",
+      "points": [
+        "وصلات وصمامات",
+        "تحديد العطل"
+      ]
+    },
+    "pool-plumbing": {
+      "photo": "drain-repair",
+      "points": [
+        "مواسير ووصلات",
+        "بعد تقييم الحالة"
+      ]
+    },
+    "water-heater-repair": {
+      "photo": "maintenance-tools",
+      "points": [
+        "فحص التسرب",
+        "فحص التسخين"
+      ]
+    },
+    "plumbing-services": {
+      "photo": "basins",
+      "points": [
+        "تأسيس وتركيب",
+        "صيانة وإصلاح"
+      ]
+    },
+    "plumbing-maintenance": {
+      "photo": "drain-repair",
+      "points": [
+        "خلاطات ووصلات",
+        "مياه وصرف"
+      ]
+    },
+    "basins": {
+      "photo": "basins",
+      "points": [
+        "تركيب مغاسل",
+        "توصيل وصيانة"
+      ]
+    },
+    "plumbing-emergency": {
+      "photo": "maintenance-tools",
+      "points": [
+        "طلبات عاجلة",
+        "تأكيد التوفر"
+      ]
+    },
+    "plumbing-installation": {
+      "photo": "plumbing-network",
+      "points": [
+        "شبكات المياه",
+        "شبكات الصرف"
+      ]
+    },
+    "water-leaks": {
+      "photo": "drain-repair",
+      "points": [
+        "تحديد المصدر",
+        "إصلاح الجزء المتضرر"
+      ]
+    },
+    "electrical-maintenance": {
+      "photo": "electrical-panel",
+      "points": [
+        "قواطع وتوصيلات",
+        "فحص الأعطال"
+      ]
+    },
+    "electrical-installation": {
+      "photo": "electrical-wiring",
+      "points": [
+        "تجهيز المسارات",
+        "أفياش وإنارة"
+      ]
+    },
+    "electrical-repair": {
+      "photo": "electrical-wiring",
+      "points": [
+        "تحديد سبب العطل",
+        "إصلاح التوصيلات"
+      ]
+    },
+    "chandeliers": {
+      "photo": "chandelier",
+      "points": [
+        "تعليق وتثبيت",
+        "تجربة الإنارة"
+      ]
+    },
+    "decorative-chandeliers": {
+      "photo": "chandelier",
+      "points": [
+        "مراجعة الوزن",
+        "تجهيز التعليق"
+      ]
+    },
+    "lighting-panels": {
+      "photo": "lighting",
+      "points": [
+        "نقاط وتوصيل",
+        "تثبيت وتجربة"
+      ]
+    },
+    "electrical-panels": {
+      "photo": "electrical-panel",
+      "points": [
+        "توزيع وقواطع",
+        "تنظيم الدوائر"
+      ]
+    },
+    "short-circuit": {
+      "photo": "electrical-panel",
+      "points": [
+        "فحص الدائرة",
+        "معالجة موضع الخلل"
+      ]
+    },
+    "wire-repair": {
+      "photo": "electrical-wiring",
+      "points": [
+        "فحص الأسلاك",
+        "إصلاح أو استبدال"
+      ]
+    },
+    "switch-repair": {
+      "photo": "switches",
+      "points": [
+        "أفياش ومفاتيح",
+        "فحص التشغيل"
+      ]
+    },
+    "lighting": {
+      "photo": "lighting",
+      "points": [
+        "LED وسبوت لايت",
+        "ثريات ووحدات"
+      ]
+    },
+    "wiring": {
+      "photo": "electrical-wiring",
+      "points": [
+        "مسارات ونقاط",
+        "تنظيم التوصيلات"
+      ]
+    }
+  }
+}

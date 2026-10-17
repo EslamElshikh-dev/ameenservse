@@ -28,16 +28,34 @@
   const filters = [...document.querySelectorAll('[data-filter]')];
   const cards = [...document.querySelectorAll('.service-catalog [data-category]')];
   const filterStatus = document.querySelector('.filter-status');
-  filters.forEach(filter => filter.addEventListener('click', () => {
-    const type = filter.dataset.filter;
+  const serviceSearch = document.getElementById('service-search');
+  const emptyServices = document.querySelector('.service-empty');
+  const resetServices = document.getElementById('reset-services');
+  const normalizeSearch = value => value.normalize('NFKC').replace(/[\u064B-\u065F\u0670]/g, '').replace(/[أإآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').toLowerCase().trim();
+  const searchableCards = cards.map(card => ({card, text: normalizeSearch(card.textContent)}));
+  let activeCategory = 'all';
+  const applyServiceFilters = () => {
+    const terms = normalizeSearch(serviceSearch?.value || '').split(/\s+/).filter(Boolean);
     let count = 0;
-    cards.forEach(card => {
-      card.hidden = type !== 'all' && card.dataset.category !== type;
+    searchableCards.forEach(({card, text}) => {
+      card.hidden = (activeCategory !== 'all' && card.dataset.category !== activeCategory) || !terms.every(term => text.includes(term));
       if (!card.hidden) count++;
     });
-    filters.forEach(item => item.setAttribute('aria-pressed', String(item === filter)));
+    filters.forEach(item => item.setAttribute('aria-pressed', String(item.dataset.filter === activeCategory)));
     if (filterStatus) filterStatus.textContent = `عرض ${count} خدمة`;
+    if (emptyServices) emptyServices.hidden = count !== 0;
+  };
+  filters.forEach(filter => filter.addEventListener('click', () => {
+    activeCategory = filter.dataset.filter;
+    applyServiceFilters();
   }));
+  serviceSearch?.addEventListener('input', applyServiceFilters);
+  resetServices?.addEventListener('click', () => {
+    activeCategory = 'all';
+    if (serviceSearch) serviceSearch.value = '';
+    applyServiceFilters();
+    serviceSearch?.focus();
+  });
   const fields = ['request-service', 'request-area', 'request-details'].map(id => document.getElementById(id));
   const requestLink = document.getElementById('request-link');
   if (requestLink && fields.every(Boolean)) {

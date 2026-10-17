@@ -1,0 +1,150 @@
+/* Photo-led service cards. Shared by the homepage and the complete catalogue. */
+.service-card {
+  padding: 0;
+  overflow: hidden;
+  border-radius: 21px;
+  border: 1px solid #d7e5ee;
+  background: #fff;
+  align-items: stretch;
+  transition: border-color .22s, box-shadow .22s, transform .22s;
+}
+.service-media { position: relative; aspect-ratio: 8 / 5; overflow: hidden; background: #dfebf2; }
+.service-media > img { width: 100%; height: 100%; object-fit: cover; transition: transform .45s; }
+.service-photo-badge {
+  position: absolute; top: 14px; right: 14px;
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 7px 11px; border: 1px solid #ffffffc9; border-radius: 8px;
+  background: #f8fcfff5; color: #075a77;
+  font-size: .65rem; line-height: 1.65; font-weight: 700;
+  box-shadow: 0 3px 12px #0b2d4110;
+}
+.service-photo-badge .icon { width: 16px; height: 16px; }
+.service-card--electrical .service-photo-badge { background: #fff2d4f5; color: #67460b; }
+.service-photo-number {
+  position: absolute; left: 14px; bottom: 14px;
+  display: grid; place-items: center; width: 31px; height: 31px;
+  border-radius: 50%; background: #ffffffed; color: #355970;
+  font: 11px Arial, sans-serif; letter-spacing: .04em;
+}
+.service-copy { display: flex; flex-direction: column; flex: 1; padding: 23px; border-top: 3px solid #1687a1; }
+.service-card--electrical .service-copy { border-top-color: #f4b63e; }
+.service-copy h3 { margin: 0 0 12px; font-size: 1.1rem; line-height: 1.7; color: #143348; }
+.service-copy > p { margin: 0 0 21px; font-size: .77rem; line-height: 2.1; flex: 1; color: #536c7b; }
+.service-points {
+  display: flex; flex-wrap: wrap; gap: 7px 13px;
+  list-style: none; padding: 0; margin: 0 0 23px;
+}
+.service-points li { display: inline-flex; align-items: center; gap: 5px; color: #3e637a; font-size: .63rem; line-height: 1.8; }
+.service-points .icon { width: 14px; height: 14px; color: #1687a1; stroke-width: 2.2; }
+.service-card--electrical .service-points .icon { color: #a97718; }
+.service-actions { display: grid; grid-template-columns: minmax(0,1fr) 46px; gap: 10px; margin-top: auto; }
+.service-order, .service-phone {
+  min-height: 46px; display: flex; align-items: center; justify-content: center;
+  border: 1px solid transparent; border-radius: 9px; transition: background .2s, box-shadow .2s;
+}
+.service-order { gap: 9px; padding: 10px 14px; background: #075a77; color: #fff; font-size: .75rem; font-weight: 700; }
+.service-order .icon { width: 18px; height: 18px; }
+.service-order .icon-whatsapp { width: 21px; height: 21px; object-fit: contain; }
+.service-order .icon:last-child { margin-inline-start: auto; width: 17px; }
+.service-card--electrical .service-order { background: #f4b63e; color: #143348; }
+.service-phone { background: #eef5f9; border-color: #cddfe9; color: #075a77; }
+.service-phone .icon { width: 19px; height: 19px; }
+.services-section .section-heading p { max-width: 610px; }
+.catalog-toolbar {
+  position: sticky; top: 87px; z-index: 32; padding-block: 18px 20px;
+  margin-bottom: 25px; background: #f5f9fcf5; border-bottom: 1px solid #d5e4ed;
+  backdrop-filter: blur(14px);
+}
+.catalog-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 17px; }
+.catalog-heading .eyebrow { font-size: .66rem; margin-bottom: 5px; }
+.catalog-heading h2 { font-size: 1.35rem; line-height: 1.7; }
+.filter-status { flex-shrink: 0; padding: 6px 11px; border-radius: 7px; background: #e8f1f7; color: #42677e; font-size: .66rem; }
+.catalog-controls { display: flex; gap: 18px; align-items: center; }
+.service-search { flex: 1; min-width: 190px; }
+.service-search input {
+  width: 100%; min-height: 48px; padding: 11px 15px;
+  border: 1px solid #ccdde8; border-radius: 10px; background: #fff;
+  color: #143348; font-size: .76rem; appearance: auto;
+}
+.service-search input::placeholder { color: #708697; opacity: 1; }
+.service-filters { flex-shrink: 0; margin: 0; gap: 8px; }
+.service-filters button { min-height: 48px; border-color: #d3e2eb; font-size: .69rem; padding: 10px 15px; gap: 9px; }
+.service-filters button span { padding: 3px 5px; border-radius: 4px; background: #eaf1f6; color: #56768c; }
+.service-filters button[aria-pressed=true] span { background: #ffffff24; color: inherit; }
+.service-filters button[data-filter=electrical][aria-pressed=true] { background: #f4b63e; color: #143348; border-color: #e6a72b; }
+.service-empty { padding: 65px 25px; text-align: center; background: #fff; border: 1px solid #d7e5ee; border-radius: 20px; }
+.service-empty h3 { font-size: 1.25rem; }
+.service-empty p { margin: 13px auto 22px; max-width: 530px; font-size: .82rem; }
+@media (hover:hover) {
+  .service-card:hover { transform: translateY(-4px); border-color: #adcedf; box-shadow: 0 14px 35px #10364d10; }
+  .service-card:hover .service-media > img { transform: scale(1.035); }
+  .service-order:hover { background: #08738f; }
+  .service-card--electrical .service-order:hover { background: #ffca62; }
+  .service-phone:hover { background: #dfedf5; }
+}
+@media (max-width:1100px) {
+  .service-copy { padding: 21px; }
+  .service-copy h3 { font-size: 1.02rem; }
+  .service-photo-badge { font-size: .6rem; padding: 6px 9px; }
+  .catalog-controls { gap: 12px; }
+  .service-filters button { padding: 10px 11px; font-size: .65rem; }
+}
+@media (max-width:920px) {
+  .catalog-toolbar { top: 77px; }
+  .service-copy { padding: 23px; }
+  .service-copy h3 { font-size: 1.08rem; }
+}
+@media (max-width:760px) {
+  .catalog-heading h2 { font-size: 1.18rem; }
+  .catalog-heading .eyebrow { font-size: .6rem; }
+  .catalog-controls { flex-direction: column; align-items: stretch; gap: 12px; }
+  .service-search { min-width: 0; }
+  .service-filters { margin: 0; }
+  .service-filters button { flex: 1; justify-content: center; }
+  .service-copy { padding: 20px; }
+  .service-copy h3 { font-size: 1rem; }
+  .service-copy > p { font-size: .75rem; }
+  .service-actions { grid-template-columns: minmax(0,1fr) 44px; gap: 8px; }
+  .service-order { font-size: .69rem; padding-inline: 10px; gap: 7px; }
+  .service-order .icon:last-child { display: none; }
+  .service-photo-badge { top: 11px; right: 11px; font-size: .57rem; gap: 5px; }
+  .service-photo-badge .icon { width: 14px; height: 14px; }
+  .service-points { gap: 7px 10px; }
+  .service-points li { font-size: .6rem; }
+}
+@media (max-width:600px) {
+  .service-grid { grid-template-columns: 1fr; }
+  .service-copy { padding: 23px; }
+  .service-copy h3 { font-size: 1.13rem; }
+  .service-copy > p { font-size: .8rem; }
+  .service-photo-badge { top: 14px; right: 14px; font-size: .65rem; }
+  .service-photo-badge .icon { width: 16px; height: 16px; }
+  .service-points li { font-size: .66rem; }
+  .service-order { font-size: .78rem; gap: 10px; }
+}
+@media (max-width:450px) {
+  .catalog-toolbar { top: 75px; padding-block: 14px 16px; margin-bottom: 22px; }
+  .catalog-heading { gap: 10px; margin-bottom: 13px; }
+  .catalog-heading h2 { font-size: 1.03rem; }
+  .catalog-heading .eyebrow { font-size: .52rem; }
+  .filter-status { font-size: .58rem; padding: 5px 7px; }
+  .service-search input { font-size: 16px; }
+  .service-filters { gap: 6px; }
+  .service-filters button { min-height: 46px; padding: 10px 8px; font-size: .6rem; gap: 5px; }
+  .service-filters button span { padding: 2px 4px; font-size: 9px; }
+  .service-copy { padding: 23px; }
+  .service-copy h3 { font-size: 1.13rem; }
+  .service-copy > p { font-size: .8rem; }
+  .service-photo-badge { top: 14px; right: 14px; font-size: .65rem; }
+  .service-photo-badge .icon { width: 16px; height: 16px; }
+  .service-points li { font-size: .66rem; }
+  .service-order { font-size: .78rem; gap: 10px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .service-card:hover, .service-card:hover .service-media > img { transform: none; }
+}
+@media print {
+  .catalog-toolbar { position: static; }
+  .catalog-controls, .service-actions { display: none; }
+  .service-card { box-shadow: none; }
+}
