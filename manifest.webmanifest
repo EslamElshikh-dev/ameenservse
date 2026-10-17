@@ -1,14 +1,14 @@
 {
   "name": "أمين سرور لخدمات السباكة وصيانة الكهرباء",
   "short_name": "أمين سرور",
-  "description": "خدمات السباكة المنزلية وصيانة الكهرباء داخل نطاق مدينة الرياض.",
+  "description": "تأسيس وصيانة السباكة والكهرباء في الرياض — حي النرجس.",
   "lang": "ar-SA",
   "dir": "rtl",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#073b4c",
+  "background_color": "#f7f8f3",
+  "theme_color": "#123f3d",
   "icons": [
     {
       "src": "assets/brand-mark.svg",

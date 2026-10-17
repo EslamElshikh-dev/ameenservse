@@ -1,166 +1,59 @@
 (() => {
-  "use strict";
-
-  const header = document.querySelector(".site-header");
-  const menuButton = document.querySelector(".menu-toggle");
-  const navigation = document.querySelector(".primary-nav");
-  const navigationLinks = [...document.querySelectorAll('.primary-nav a[href^="#"]')];
-  const sectionLinks = navigationLinks
-    .map((link) => ({ link, section: document.querySelector(link.getAttribute("href")) }))
-    .filter(({ section }) => section);
-  const mobileNavigationLinks = [
-    ...document.querySelectorAll('.mobile-bottom-nav a[href^="#"]')
-  ];
-  const mobileSectionLinks = mobileNavigationLinks
-    .map((link) => {
-      const target = link.getAttribute("href");
-      const section = target === "#top"
-        ? document.querySelector(".hero")
-        : document.querySelector(target);
-      return { link, section };
-    })
-    .filter(({ section }) => section);
-
-  const setMenuState = (isOpen) => {
-    if (!menuButton || !navigation) return;
-
-    menuButton.setAttribute("aria-expanded", String(isOpen));
-    menuButton.setAttribute("aria-label", isOpen ? "إغلاق القائمة" : "فتح القائمة");
-    navigation.classList.toggle("is-open", isOpen);
-    document.body.classList.toggle("menu-open", isOpen);
+  'use strict';
+  document.documentElement.classList.add('js');
+  const toggle = document.querySelector('.menu-toggle');
+  const nav = document.querySelector('#main-nav');
+  const closeMenu = () => {
+    toggle?.setAttribute('aria-expanded', 'false');
+    toggle?.setAttribute('aria-label', 'فتح القائمة');
+    nav?.classList.remove('is-open');
   };
-
-  menuButton?.addEventListener("click", () => {
-    setMenuState(menuButton.getAttribute("aria-expanded") !== "true");
+  toggle?.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') !== 'true';
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'إغلاق القائمة' : 'فتح القائمة');
+    nav?.classList.toggle('is-open', open);
   });
-
-  navigationLinks.forEach((link) => {
-    link.addEventListener("click", () => setMenuState(false));
+  nav?.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') {
+      closeMenu();
+      toggle.focus();
+    }
   });
-
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") setMenuState(false);
+  document.addEventListener('click', event => {
+    if (!event.target.closest('.header-inner')) closeMenu();
   });
-
-  document.addEventListener("click", (event) => {
-    if (!navigation?.classList.contains("is-open")) return;
-    if (navigation.contains(event.target) || menuButton?.contains(event.target)) return;
-    setMenuState(false);
-  });
-
-  const updateHeader = () => {
-    header?.classList.toggle("is-scrolled", window.scrollY > 10);
-  };
-
-  updateHeader();
-  window.addEventListener("scroll", updateHeader, { passive: true });
-
-  if ("IntersectionObserver" in window && sectionLinks.length) {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
-        if (!visible) return;
-
-        sectionLinks.forEach(({ link, section }) => {
-          const active = section === visible.target;
-          link.classList.toggle("is-active", active);
-          if (active) link.setAttribute("aria-current", "location");
-          else link.removeAttribute("aria-current");
-        });
-      },
-      {
-        rootMargin: "-28% 0px -58% 0px",
-        threshold: [0, 0.08, 0.2]
-      }
-    );
-
-    sectionLinks.forEach(({ section }) => observer.observe(section));
-  }
-
-  if ("IntersectionObserver" in window && mobileSectionLinks.length) {
-    const mobileObserver = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
-        if (!visible) return;
-
-        mobileSectionLinks.forEach(({ link, section }) => {
-          const active = section === visible.target;
-          link.classList.toggle("is-active", active);
-          if (active) link.setAttribute("aria-current", "location");
-          else link.removeAttribute("aria-current");
-        });
-      },
-      {
-        rootMargin: "-25% 0px -62% 0px",
-        threshold: [0, 0.05, 0.15]
-      }
-    );
-
-    mobileSectionLinks.forEach(({ section }) => mobileObserver.observe(section));
-  }
-
-  const detailsItems = [...document.querySelectorAll(".accordion details")];
-  detailsItems.forEach((item) => {
-    item.addEventListener("toggle", () => {
-      if (!item.open) return;
-      detailsItems.forEach((otherItem) => {
-        if (otherItem !== item) otherItem.open = false;
-      });
+  window.matchMedia('(min-width: 921px)').addEventListener?.('change', closeMenu);
+  const filters = [...document.querySelectorAll('[data-filter]')];
+  const cards = [...document.querySelectorAll('.service-catalog [data-category]')];
+  const filterStatus = document.querySelector('.filter-status');
+  filters.forEach(filter => filter.addEventListener('click', () => {
+    const type = filter.dataset.filter;
+    let count = 0;
+    cards.forEach(card => {
+      card.hidden = type !== 'all' && card.dataset.category !== type;
+      if (!card.hidden) count++;
     });
-  });
-
-  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  if (!reducedMotion.matches && "IntersectionObserver" in window) {
-    const revealGroups = [
-      ".section-heading",
-      ".category-heading",
-      ".service-card",
-      ".why-copy",
-      ".process-card",
-      ".area-heading",
-      ".map-shell",
-      ".neighborhoods-panel",
-      ".faq-intro",
-      ".accordion details",
-      ".contact-panel",
-      ".footer-main > *",
-      ".developer-signature"
-    ];
-    const revealElements = [...document.querySelectorAll(revealGroups.join(","))];
-    const revealObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add("is-visible");
-          revealObserver.unobserve(entry.target);
-        });
-      },
-      {
-        rootMargin: "0px 0px -8% 0px",
-        threshold: 0.08
-      }
-    );
-
-    revealElements.forEach((element, index) => {
-      element.classList.add("reveal");
-      element.style.setProperty("--reveal-delay", `${(index % 4) * 55}ms`);
-      revealObserver.observe(element);
-    });
+    filters.forEach(item => item.setAttribute('aria-pressed', String(item === filter)));
+    if (filterStatus) filterStatus.textContent = `عرض ${count} خدمة`;
+  }));
+  const fields = ['request-service', 'request-area', 'request-details'].map(id => document.getElementById(id));
+  const requestLink = document.getElementById('request-link');
+  if (requestLink && fields.every(Boolean)) {
+    const [service, area, details] = fields;
+    const updateRequest = () => {
+      const message = [`مرحبًا أمين سرور، أرغب في طلب خدمة ${service.value}.`, area.value.trim() ? `الحي في الرياض: ${area.value.trim()}` : '', details.value.trim() ? `تفاصيل الطلب: ${details.value.trim()}` : ''].filter(Boolean).join('\n');
+      requestLink.href = `https://wa.me/966545350293?text=${encodeURIComponent(message)}`;
+    };
+    fields.forEach(field => field.addEventListener('input', updateRequest));
+    updateRequest();
   }
-
-  const year = document.querySelector("#current-year");
+  const year = document.getElementById('current-year');
   if (year) year.textContent = String(new Date().getFullYear());
-
-  const desktopMedia = window.matchMedia("(min-width: 921px)");
-  const closeMenuOnDesktop = (event) => {
-    if (event.matches) setMenuState(false);
-  };
-
-  desktopMedia.addEventListener?.("change", closeMenuOnDesktop);
+  // This public event measures a click, never a completed call or a qualified lead.
+  document.querySelectorAll('a[href^="tel:"],a[href^="https://wa.me/"]').forEach(link => link.addEventListener('click', () => {
+    const detail = {channel: link.href.startsWith('tel:') ? 'phone' : 'whatsapp', page: location.pathname};
+    window.dispatchEvent(new CustomEvent('ameen:contact-click', {detail}));
+  }));
 })();
