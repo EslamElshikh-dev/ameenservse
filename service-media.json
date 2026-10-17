@@ -109,6 +109,16 @@
       "position": "centre",
       "src": "assets/services/lighting.webp",
       "small": "assets/services/lighting-480.webp"
+    },
+    {
+      "key": "shower",
+      "sourcePhoto": 136,
+      "sourceUrl": "https://lh3.googleusercontent.com/05cKkxY-EGtB6c3uI8owFPqGyJoWgtX-HqT53hQkIiRStev-xdIoq-68c23P1NFE7NmZXVu_S-C6d0Rs=s0",
+      "sourceProfile": "https://www.google.com/maps?cid=809316932329652691",
+      "alt": "تجهيزات دش وخلاط مياه أسود من صور ملف أمين سرور",
+      "position": "centre",
+      "src": "assets/services/shower.webp",
+      "small": "assets/services/shower-480.webp"
     }
   ],
   "services": {
@@ -127,7 +137,7 @@
       ]
     },
     "showers": {
-      "photo": "sanitary",
+      "photo": "shower",
       "points": [
         "تغذية وتوصيل",
         "تثبيت وتجربة"
@@ -225,7 +235,7 @@
       ]
     },
     "electrical-repair": {
-      "photo": "electrical-wiring",
+      "photo": "switches",
       "points": [
         "تحديد سبب العطل",
         "إصلاح التوصيلات"

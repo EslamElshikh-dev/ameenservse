@@ -42,7 +42,7 @@
       if (!card.hidden) count++;
     });
     filters.forEach(item => item.setAttribute('aria-pressed', String(item.dataset.filter === activeCategory)));
-    if (filterStatus) filterStatus.textContent = `عرض ${count} خدمة`;
+    if (filterStatus) filterStatus.textContent = count === 0 ? 'لا توجد خدمات مطابقة' : count === 1 ? 'عرض خدمة واحدة' : count === 2 ? 'عرض خدمتين' : `عرض ${count} ${count <= 10 ? 'خدمات' : 'خدمة'}`;
     if (emptyServices) emptyServices.hidden = count !== 0;
   };
   filters.forEach(filter => filter.addEventListener('click', () => {
