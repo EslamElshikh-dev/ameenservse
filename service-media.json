@@ -303,6 +303,76 @@
         "مسارات ونقاط",
         "تنظيم التوصيلات"
       ]
+    },
+    "drain-unblocking": {
+      "photo": "drain-repair",
+      "points": [
+        "أحواض وصرف داخلي",
+        "تحديد سبب الانسداد"
+      ]
+    },
+    "tap-installation": {
+      "photo": "shower",
+      "points": [
+        "خلاطات ومحابس",
+        "توصيل وفحص التسرب"
+      ]
+    },
+    "water-pumps": {
+      "photo": "water-pump",
+      "points": [
+        "تركيب أو استبدال",
+        "فحص التشغيل"
+      ]
+    },
+    "water-pressure": {
+      "photo": "plumbing-network",
+      "points": [
+        "فحص تدفق المياه",
+        "مراجعة الشبكة"
+      ]
+    },
+    "cistern-float": {
+      "photo": "sanitary",
+      "points": [
+        "سيفون وعوامة",
+        "ضبط تعبئة المياه"
+      ]
+    },
+    "water-valves": {
+      "photo": "plumbing-network",
+      "points": [
+        "محابس ووصلات",
+        "مراجعة المقاسات"
+      ]
+    },
+    "breaker-replacement": {
+      "photo": "electrical-panel",
+      "points": [
+        "تحديد سبب الفصل",
+        "مواصفات مناسبة"
+      ]
+    },
+    "socket-installation": {
+      "photo": "switches",
+      "points": [
+        "أفياش ومفاتيح",
+        "تثبيت وفحص"
+      ]
+    },
+    "spotlights": {
+      "photo": "lighting",
+      "points": [
+        "سبوت لايت وLED",
+        "مراجعة التوصيل"
+      ]
+    },
+    "electrical-emergency": {
+      "photo": "electrical-wiring",
+      "points": [
+        "أعطال مفاجئة",
+        "تأكيد التوفر"
+      ]
     }
   }
 }
