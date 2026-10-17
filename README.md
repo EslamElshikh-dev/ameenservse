@@ -21,3 +21,5 @@
 الخط Noto Sans Arabic بترخيص SIL Open Font License؛ النص الكامل في `assets/fonts/OFL.txt`. الصور مأخوذة من ملف أمين سرور على Google بإذن صاحب المهمة لاستخدامها في موقع نشاطه.
 
 التصميم والتطوير: [المهندس إسلام الشيخ](https://www.eslam-elshikh.com/).
+
+رموز WhatsApp: ملفات SVG الأصلية Green / White / Black من حزمة Meta الرسمية Digital Glyph RGB 2026، دون تغيير الرسم أو الألوان. المصدر: https://www.meta.com/brand/resources/whatsapp/whatsapp-brand/ . طُبّقت هوية أزرق مائي وكهرماني على الموقع مع أزرار تواصل عائمة 56px للكمبيوتر و52px للجوال.
