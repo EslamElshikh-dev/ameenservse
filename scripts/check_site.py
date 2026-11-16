@@ -4,6 +4,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urljoin, urlsplit
 from xml.etree import ElementTree
+from article_content import POSTS, BY_SLUG, PUBLISHED
 
 ROOT = Path(__file__).resolve().parent.parent
 BUSINESS = json.loads((ROOT / 'business-data.json').read_text())
@@ -15,6 +16,8 @@ class Page(HTMLParser):
         super().__init__(convert_charrefs=True)
         self.path, self.ids, self.refs = path, [], []
         self.h1, self.canonical, self.robots = 0, [], ''
+        self.meta, self.title, self.h1_text = {}, '', ''
+        self._title, self._h1 = False, False
         self.schemas, self._schema = [], None
         self.feed(path.read_text())
 
@@ -24,21 +27,36 @@ class Page(HTMLParser):
             self.ids.append(a['id'])
         if tag == 'h1':
             self.h1 += 1
+            self._h1 = True
+        if tag == 'title':
+            self._title = True
         if tag == 'link' and a.get('rel') == 'canonical':
             self.canonical.append(a.get('href'))
         if tag == 'meta' and a.get('name') == 'robots':
             self.robots = a.get('content', '')
+        if tag == 'meta':
+            self.meta[a.get('name') or a.get('property')] = a.get('content', '')
         if tag == 'script' and a.get('type') == 'application/ld+json':
             self._schema = ''
         for key in ('href', 'src'):
             if a.get(key):
                 self.refs.append(a[key])
+        if a.get('srcset'):
+            self.refs.extend(source.strip().split()[0] for source in a['srcset'].split(','))
 
     def handle_data(self, data):
+        if self._title:
+            self.title += data
+        if self._h1:
+            self.h1_text += data
         if self._schema is not None:
             self._schema += data
 
     def handle_endtag(self, tag):
+        if tag == 'title':
+            self._title = False
+        if tag == 'h1':
+            self._h1 = False
         if tag == 'script' and self._schema is not None:
             self.schemas.append(json.loads(self._schema))
             self._schema = None
@@ -52,10 +70,11 @@ def file_for(url_path):
 
 
 def check():
-    pages = {p: Page(p) for p in ROOT.glob('*.html')}
+    pages = {p: Page(p) for p in ROOT.rglob('*.html') if '.git' not in p.parts}
+    by_route = {'/' if p == ROOT / 'index.html' else '/' + p.relative_to(ROOT).with_suffix('').as_posix(): page for p, page in pages.items()}
     checked = 0
     for path, page in pages.items():
-        route = '/' if path.stem == 'index' else '/' + path.stem
+        route = '/' if path == ROOT / 'index.html' else '/' + path.relative_to(ROOT).with_suffix('').as_posix()
         assert page.h1 == 1, (path.name, 'H1 count', page.h1)
         assert len(page.ids) == len(set(page.ids)), (path.name, 'duplicate IDs')
         assert page.canonical == [urljoin(BASE, route)], (path.name, 'canonical')
@@ -85,8 +104,51 @@ def check():
         assert local in pages and local.stem != '404'
         assert pages[local].canonical == [loc]
         route = urlsplit(loc).path
-        expected = BUSINESS.get('pageUpdatedOn', {}).get(route, BUSINESS['contentUpdatedOn'])
+        post = BY_SLUG.get(route.removeprefix('/blog/')) if route.startswith('/blog/') else None
+        expected = post.get('modified', PUBLISHED) if post else BUSINESS.get('pageUpdatedOn', {}).get(route, BUSINESS['contentUpdatedOn'])
         assert modified == expected, (route, 'lastmod')
+        if post:
+            image = entry.find('{http://www.google.com/schemas/sitemap-image/1.1}image/{http://www.google.com/schemas/sitemap-image/1.1}loc')
+            assert image is not None and file_for(urlsplit(image.text).path).is_file(), (route, 'sitemap image')
+    assert len({page.title for page in pages.values()}) == len(pages), 'duplicate page titles'
+    assert len({page.meta['description'] for page in pages.values()}) == len(pages), 'duplicate descriptions'
+    expected_titles = ['افضل سباك', 'أفضل سباك في النرجس', 'افضل سباك في العارض', 'افضل سباك في الياسمين', 'افصل سباك في الملقا', 'افضل كهربائي', 'افضل كهربائي في النرجس', 'افضل كهربائي في الياسمين', 'افضل كهربائي في العارض', 'افضل كهربائي في الملقا', 'تأسيس سباكة', 'تصليح سباكة']
+    assert [post['title'] for post in POSTS] == expected_titles
+    assert len(BY_SLUG) == len(POSTS) == 12
+    photos = {photo['key']: photo for photo in json.loads((ROOT / 'service-media.json').read_text())['photos']}
+    for post in POSTS:
+        route = '/blog/' + post['slug']
+        page = by_route[route]
+        assert page.h1_text == post['title'], (route, 'exact requested heading')
+        assert page.meta['og:type'] == 'article'
+        assert page.meta['og:image'] == BASE + photos[post['photo']]['src']
+        assert page.meta['twitter:image'] == page.meta['og:image']
+        article = [node for node in page.schemas[0]['@graph'] if node.get('@type') == 'BlogPosting']
+        assert len(article) == 1 and article[0]['headline'] == post['title']
+        assert article[0]['datePublished'] == PUBLISHED
+        assert article[0]['dateModified'] == post.get('modified', PUBLISHED)
+        assert article[0]['image'] == [page.meta['og:image']]
+        assert article[0]['author']['@id'] == BASE + '#business'
+        breadcrumb = next(node for node in page.schemas[0]['@graph'] if node.get('@type') == 'BreadcrumbList')
+        assert [item['position'] for item in breadcrumb['itemListElement']] == [1, 2, 3]
+        assert breadcrumb['itemListElement'][-1]['name'] == post['title']
+        assert route in by_route['/blog'].refs, (route, 'archive discovery')
+        assert all('/blog/' + related in page.refs for related in post['related'])
+        assert all('article-' + section_id in page.ids for section_id, *_ in post['sections'])
+        assert 'article-faq' in page.ids and 'loading="eager"' in page.path.read_text()
+    archive = next(node for node in by_route['/blog'].schemas[0]['@graph'] if node.get('@type') == 'ItemList')
+    assert archive['numberOfItems'] == len(POSTS)
+    reachable, pending = set(), ['/']
+    while pending:
+        route = pending.pop()
+        if route in reachable:
+            continue
+        reachable.add(route)
+        for ref in by_route[route].refs:
+            target = urlsplit(urljoin(BASE.rstrip('/') + route, ref))
+            if target.netloc == urlsplit(BASE).netloc and target.path in by_route and target.path not in reachable:
+                pending.append(target.path)
+    assert set(by_route) - {'/404'} <= reachable, 'orphan content pages'
     nav_paths = {'/plumber-riyadh', '/electrician-riyadh'}
     assert all(nav_paths.issubset(set(p.refs)) for p in pages.values())
     service_ids = set(json.loads((ROOT / 'service-media.json').read_text())['services'])
