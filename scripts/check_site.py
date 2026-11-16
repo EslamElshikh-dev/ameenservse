@@ -92,6 +92,22 @@ def check():
     service_ids = set(json.loads((ROOT / 'service-media.json').read_text())['services'])
     assert service_ids.issubset(set(pages[ROOT / 'services.html'].ids)), 'missing service destinations'
     assert BUSINESS['reviewUrl'] in pages[ROOT / 'index.html'].refs
+    review_data = json.loads((ROOT / 'reviews-data.json').read_text())
+    assert len(review_data['reviews']) + len(review_data['ratingOnly']) == BUSINESS['reviewSnapshot']['count']
+    assert review_data['asOf'] == BUSINESS['reviewSnapshot']['asOf']
+    assert len({review['author'] for review in review_data['reviews']}) == len(review_data['reviews'])
+    assert all(review.get('text') for review in review_data['reviews'])
+    assert all('text' not in review for review in review_data['ratingOnly'])
+    for filename, count in [('index.html', 14), ('about.html', 14), ('services.html', 6)]:
+        content = (ROOT / filename).read_text()
+        assert content.count('class="review-card"') == count, (filename, 'review count')
+        assert 'reviews.js?v=20261116-carousel' in content
+        assert 'aria-live="polite"' in content and 'إيقاف الحركة' in content
+        for review in review_data['reviews'][:count]:
+            from html import escape
+            assert escape(review['text']) in content, (filename, review['author'], 'quotation')
+            assert review['url'] in pages[ROOT / filename].refs
+        assert 'AggregateRating' not in content and '"@type": "Review"' not in content
     print(f'PASS: {len(pages)} HTML pages, {checked} local references, {len(urls)} sitemap URLs; metadata, anchors and business identity checked.')
 
 

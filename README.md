@@ -58,3 +58,11 @@
 - `pageUpdatedOn` يحفظ تاريخ التغيير الفعلي لكل صفحة عند اختلافه عن `contentUpdatedOn`. يستخدم sitemap و`WebPage.dateModified` المصدر نفسه؛ لا يتغير التاريخ بمجرد إعادة البناء.
 
 بعد التوليد شغّل `python3 scripts/check_site.py` للتحقق من الروابط والأجزاء الداخلية والملفات والعناوين الأساسية وقواعد الفهرسة وJSON-LD وتطابق هاتف النشاط. هذه فحوص للموقع وليست إثباتًا لقبول Google للفهرسة أو لتحسن ترتيب الخرائط.
+
+### Google review carousel — 16 November 2026
+
+The home and about pages show 14 attributed public review quotations; the services page shows six. The 5.0/17 snapshot includes three rating-only reviews without invented comments. `reviews-data.json` records the observation date, source scope and explicit excerpt flags. No self-serving Review/AggregateRating structured data is emitted.
+
+`reviews.js` progressively enhances the static review grid with native RTL scroll-snap, one/two/three responsive columns, arrow/keyboard/dot controls and a pause button. Motion stops on hover, focus, pointer interaction, hidden tabs and when outside the viewport. Reduced-motion preferences disable autoplay and smooth scrolling. All quotations and sources remain readable without JavaScript; no external carousel dependency or Google iframe is loaded.
+
+Validation: `python3 scripts/build_site.py`, `python3 scripts/check_site.py`, `node --check reviews.js`. Confirm controls and review source links in a browser after deployment.
