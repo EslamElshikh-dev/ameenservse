@@ -6,11 +6,11 @@
 
 `business-data.json` مصدر بيانات النشاط المشتركة. البيانات طابقت الملف التجاري في 17 أكتوبر 2026: الاسم، الهاتف وواتساب، عنوان النرجس 13327، منطقة الخدمة الرياض، ومواعيد العمل على مدار الساعة طوال الأسبوع. لا تعني بيانات الموقع وجود ضمان أو سعر أو زمن وصول لم يُؤكد.
 
-شغّل `python3 scripts/build_site.py` لإعادة توليد صفحات المحتوى الثماني وصفحة 404 وملف sitemap بعد تعديل البيانات أو المحتوى في المولد. لا يحتاج الموقع إلى بناء أو مكتبات في وقت التشغيل. ينشر Vercel الفرع الرئيسي، مع cleanUrls وروابط أساسية دون امتداد HTML.
+شغّل `python3 scripts/build_site.py` لإعادة توليد صفحات المحتوى العشرين وصفحة 404 وملف sitemap بعد تعديل البيانات أو المحتوى في المولد. لا يحتاج الموقع إلى بناء أو مكتبات في وقت التشغيل. ينشر Vercel الفرع الرئيسي، مع cleanUrls وروابط أساسية دون امتداد HTML.
 
 ## الموقع
 
-- ثماني صفحات محتوى بتصميم موحد، بالإضافة لصفحة 404.
+- ثماني صفحات أساسية و12 مقالًا بتصميم موحد، بالإضافة لصفحة 404.
 - 36 خدمة قابلة للبحث والتصفية: 26 اسمًا من الملف التجاري و10 تفصيلات إضافية ضمن أعمال السباكة والكهرباء الحالية.
 - طلب واتساب اختياري يجمع الرسالة محليًا؛ لا يخزن البيانات ولا يرسلها تلقائيًا.
 - صور حقيقية من ملف النشاط، وخط عربي محلي وصور WebP بأحجام متعددة.
@@ -66,3 +66,19 @@ The home and about pages show 14 attributed public review quotations; the servic
 `reviews.js` progressively enhances the static review grid with native RTL scroll-snap, one/two/three responsive columns, arrow/keyboard/dot controls and a pause button. Motion stops on hover, focus, pointer interaction, hidden tabs and when outside the viewport. Reduced-motion preferences disable autoplay and smooth scrolling. All quotations and sources remain readable without JavaScript; no external carousel dependency or Google iframe is loaded.
 
 Validation: `python3 scripts/build_site.py`, `python3 scripts/check_site.py`, `node --check reviews.js`. Confirm controls and review source links in a browser after deployment.
+
+## المقالات المحلية — 16 نوفمبر 2026
+
+`/blog` يجمع 12 مقالًا جديدًا ضمن قسمين واضحين، مع إبقاء دليل تجهيز الطلب وروابط أجزائه السابقة. عناوين المستخدم محفوظة حرفيًا، بما فيها «افصل سباك في الملقا»، مع إزالة تكرار عنوان العارض فقط. الحصيلة 12 عنوانًا مختلفًا من القائمة، بدل إسقاط اثنين للالتزام بالعدد الأولي 10.
+
+المصدر التحريري هو `scripts/article_content.py`: لكل مقال زاوية مستقلة، ومقدمة وأقسام وأسئلة ومقالات مرتبطة. أحياء الخدمة ليست فروعًا أو مشروعات منسوبة إلى تلك الأحياء. «أفضل» ضمن عنوان البحث ودليل الاختيار؛ لا يتضمن المحتوى تصنيفًا مستقلًا أو تفوقًا مثبتًا أو أسعارًا أو ضمانات أو معدات جديدة. صور المقالات الاثنتا عشرة الرئيسية مأخوذة من صور النشاط المعتمدة في `service-media.json`، ولا تُنسب إلى حي بعينه.
+
+لكل مقال URL أساسي مستقل وBlogPosting وBreadcrumbList وصورة مشاركة مطابقة للصورة المرئية وتاريخ نشر ثابت. الملخص `ItemList` على `/blog` يطابق المقالات المرئية. sitemap يضم 20 عنوانًا أساسيًا و12 مرجعًا لصور المقالات. لا تُغيّر تواريخ النشر مع كل بناء، ولا تعني إضافة السكيما أو الخريطة قبول الفهرسة.
+
+`articles.css` يقدم صورًا متجاوبة، وبطاقات قراءة، ونقاطًا موجزة، وفهرس أقسام، وجداول قابلة للتمرير داخل حدودها، وأسئلة قابلة للفتح، وروابط الخدمة والاتصال وواتساب. لا تضيف المقالات JavaScript أو خطًا خارجيًا جديدًا؛ يبقى المحتوى كاملًا في HTML.
+
+عينة البحث العامة بتاريخ 16 نوفمبر 2026 شملت خدمات السباكة والكهرباء والأحياء، مع قراءة الصفحات الأصلية لـ `homefix.sa` و`sabakriyadh.site`. أظهرت العينة اهتمامًا بنطاق العمل والمواد والتكلفة والفحص، فاستُخدمت هذه الأسئلة لبناء محتوى أصلي. العينة ليست قياس ترتيب من نقطة ثابتة داخل الرياض، ولم يُعتمد حجم بحث أو ترتيب منافسين أو صحة ادعاءاتهم كحقائق.
+
+مراجع التنفيذ: [Google: المحتوى المفيد](https://developers.google.com/search/docs/fundamentals/creating-helpful-content)، [بيانات المقالات](https://developers.google.com/search/docs/appearance/structured-data/article)، [خريطة الموقع](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap)، [سياسات المحتوى المتشابه والمداخل](https://developers.google.com/search/docs/essentials/spam-policies). مرجع السلامة العام المرتبط في دليل الكهربائي: [ESFI](https://www.esfi.org/home-electrical-safety/). لا يقدم المحتوى تعليمات لفك توصيلات أو تغيير قدرات أو تنفيذ تمديدات ذاتيًا.
+
+التحقق: `python3 scripts/build_site.py` ثم `python3 scripts/check_site.py`. تشمل الفحوص المسارات المتداخلة، والعناوين المطلوبة، وخصوصية الوصف والصور، وتطابق المقال مع JSON-LD، وروابط الأقسام والمقالات والخدمات، وخريطة الموقع، وإمكانية الوصول إلى كل صفحة من الرئيسية.
