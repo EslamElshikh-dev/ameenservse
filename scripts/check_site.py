@@ -2,9 +2,10 @@
 import json
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import unquote, urljoin, urlsplit
+from urllib.parse import parse_qs, unquote, urljoin, urlsplit
 from xml.etree import ElementTree
 from article_content import POSTS, BY_SLUG, PUBLISHED
+from service_routes import DETAIL_PAGES, SERVICE_DESTINATIONS
 
 ROOT = Path(__file__).resolve().parent.parent
 BUSINESS = json.loads((ROOT / 'business-data.json').read_text())
@@ -19,10 +20,19 @@ class Page(HTMLParser):
         self.meta, self.title, self.h1_text = {}, '', ''
         self._title, self._h1 = False, False
         self.schemas, self._schema = [], None
+        self.service_cards, self._service = {}, None
         self.feed(path.read_text())
 
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
+        classes = set(a.get('class', '').split())
+        if tag == 'article' and 'service-card' in classes:
+            self._service = a['id']
+            self.service_cards[self._service] = {}
+        if tag == 'a' and self._service is not None:
+            actions = classes & {'service-title-link', 'service-order', 'service-phone'}
+            for action in actions:
+                self.service_cards[self._service][action] = a['href']
         if a.get('id'):
             self.ids.append(a['id'])
         if tag == 'h1':
@@ -53,6 +63,8 @@ class Page(HTMLParser):
             self._schema += data
 
     def handle_endtag(self, tag):
+        if tag == 'article':
+            self._service = None
         if tag == 'title':
             self._title = False
         if tag == 'h1':
@@ -152,7 +164,32 @@ def check():
     nav_paths = {'/plumber-riyadh', '/electrician-riyadh'}
     assert all(nav_paths.issubset(set(p.refs)) for p in pages.values())
     service_ids = set(json.loads((ROOT / 'service-media.json').read_text())['services'])
-    assert service_ids.issubset(set(pages[ROOT / 'services.html'].ids)), 'missing service destinations'
+    directory = by_route['/services']
+    assert service_ids == set(directory.service_cards) == set(SERVICE_DESTINATIONS), 'missing service destinations'
+    service_data = {node['@id']: node for node in directory.schemas[0]['@graph'] if node.get('@type') == 'Service'}
+    for slug, destination in SERVICE_DESTINATIONS.items():
+        item = service_data[BASE + 'services#' + slug]
+        assert item['url'] == urljoin(BASE, destination), (slug, 'structured destination')
+        assert directory.service_cards[slug]['service-title-link'] == destination, (slug, 'directory link')
+        for page in (directory, by_route[urlsplit(destination).path]):
+            card = page.service_cards[slug]
+            order_url = urlsplit(card['service-order'])
+            assert order_url._replace(query='').geturl() == BUSINESS['whatsapp'], (slug, 'WhatsApp number')
+            message = parse_qs(order_url.query)['text'][0].splitlines()
+            assert message == [
+                'السلام عليكم، أحتاج خدمة ' + item['name'] + '.',
+                'الحي في الرياض: ',
+                'وصف المشكلة أو العمل المطلوب: ',
+            ], (slug, 'WhatsApp message')
+            assert card['service-phone'] == 'tel:' + BUSINESS['telephone']
+            assert card['service-order'] == item['availableChannel']['serviceUrl']
+    for route, group in DETAIL_PAGES.items():
+        page = by_route[route]
+        assert page.h1_text == group['title']
+        assert page.meta['og:image'] == BASE + photos[group['photo']]['src']
+        assert route in directory.refs and route in by_route[group['parent']].refs
+        assert set(page.service_cards) == set(group['services'])
+        assert all('#' + slug in page.refs for slug in group['services'])
     assert BUSINESS['reviewUrl'] in pages[ROOT / 'index.html'].refs
     review_data = json.loads((ROOT / 'reviews-data.json').read_text())
     assert len(review_data['reviews']) + len(review_data['ratingOnly']) == BUSINESS['reviewSnapshot']['count']
@@ -170,7 +207,7 @@ def check():
             assert escape(review['text']) in content, (filename, review['author'], 'quotation')
             assert review['url'] in pages[ROOT / filename].refs
         assert 'AggregateRating' not in content and '"@type": "Review"' not in content
-    print(f'PASS: {len(pages)} HTML pages, {checked} local references, {len(urls)} sitemap URLs; metadata, anchors and business identity checked.')
+    print(f'PASS: {len(pages)} HTML pages, {checked} local references, {len(urls)} sitemap URLs and {len(service_ids)} service destinations and WhatsApp messages.')
 
 
 if __name__ == '__main__':
