@@ -7,6 +7,7 @@ from pathlib import Path
 from urllib.parse import quote
 from datetime import date
 from article_content import POSTS, BY_SLUG, PUBLISHED
+from service_routes import CATEGORY_PAGES, DETAIL_PAGES, SERVICE_DESTINATIONS, SERVICE_GROUPS
 
 ROOT = Path(__file__).resolve().parent.parent
 B = json.loads((ROOT / 'business-data.json').read_text())
@@ -77,8 +78,7 @@ def article_page(post):
     hero_photo = PHOTOS[post['photo']]
     return f'''<article class="guide-article" aria-labelledby="article-title"><header class="guide-hero"><div class="wrap"><nav class="breadcrumbs" aria-label="مسار التنقل"><a href="/">الرئيسية</a><span>/</span><a href="/blog">المقالات ودليل العميل</a><span>/</span><span aria-current="page">{ESC(post['title'])}</span></nav><div class="guide-hero-grid"><div class="guide-hero-copy"><div class="guide-labels"><a href="{service}">{category}</a><span>{ESC(post['area'])}</span></div><h1 id="article-title">{ESC(post['title'])}</h1><p class="guide-dek">{ESC(post['dek'])}</p><div class="guide-meta"><span>نشر: <a href="/about">أمين سرور</a></span><time datetime="{PUBLISHED}">{arabic_date(PUBLISHED)}</time><span>{article_reading_time(post)} دقائق قراءة</span></div><a class="guide-start" href="#article-content">ابدأ القراءة {icon('arrow')}</a></div><figure class="guide-hero-image">{article_image(post['photo'], True)}<figcaption>{ESC(hero_photo['alt'])}</figcaption></figure></div></div></header><div class="wrap"><section class="guide-takeaways" aria-labelledby="takeaways-title"><h2 id="takeaways-title">ثلاث نقاط تبدأ منها</h2><ul>{points}</ul></section><div class="guide-layout" id="article-content"><aside class="guide-sidebar"><nav class="guide-toc" aria-labelledby="toc-title"><h2 id="toc-title">في هذا المقال</h2><ol>{toc}<li><a href="#article-faq"><span>؟</span>أسئلة قبل طلب الخدمة</a></li></ol></nav><div class="guide-help"><span class="eyebrow">من القراءة إلى طلب واضح</span><h2>وش يحتاج بيتك؟</h2><p>أرسل الحي ووصف الحالة لتأكيد التوفر وتنسيق الزيارة مع أمين سرور.</p>{button(request, 'أرسل تفاصيل الطلب', 'primary', 'whatsapp')}{button('tel:' + PHONE, 'اتصال بأمين سرور', 'outline', 'phone')}<a class="guide-service-link" href="{service}">استكشف نطاق الخدمة {icon('arrow')}</a></div></aside><div class="guide-article-body">{sections}<section class="guide-faq" aria-labelledby="article-faq"><span class="eyebrow">تفاصيل تهمك</span><h2 id="article-faq">أسئلة قبل طلب الخدمة</h2><div class="accordion">{questions}</div></section><div class="guide-endnote"><p>هل تحتاج توضيح نطاق طلبك؟ راجع <a href="{service}">تفاصيل خدمات {category}</a>، أو استخدم <a href="/contact#request">نموذج تجهيز رسالة واتساب</a> لإرسال المعلومات التي تخص حالتك.</p><a href="/blog">العودة إلى كل المقالات {icon('arrow')}</a></div></div></div></div><section class="section guide-related" aria-labelledby="related-title"><div class="wrap"><span class="eyebrow">كمّل الصورة</span><h2 id="related-title">أدلة مرتبطة باحتياجك</h2><div class="guide-grid">{related}</div></div></section></article>{cta()}'''
 
-# The first 26 names reflect the current Business Profile. The additional website
-# services below explain specific jobs within the verified plumbing/electrical scope.
+# Service names reflect the Business Profile and existing website specialties.
 SERVICES = [
  ('pipe-repair','إصلاح أنابيب السباكة','plumbing','إصلاح مواسير المياه والصرف والوصلات المتضررة، ومعالجة التسرب حسب حالة التمديدات وإمكانية الوصول إلى موضع العطل.','pipe'),
  ('toilet-repair','إصلاح المراحيض','plumbing','معالجة مشكلات السيفون والتعبئة والتسرب في المرحاض، وفحص الوصلات لتحديد القطعة التي تحتاج إلى إصلاح أو استبدال.','water'),
@@ -116,11 +116,22 @@ SERVICE_EXTENSIONS = [
  ('cistern-float','تغيير عوامة السيفون وقطع التعبئة','plumbing','معالجة استمرار نزول الماء أو بطء تعبئة صندوق الطرد، وفحص عوامة السيفون وصمام التعبئة واستبدال القطعة المناسبة عند الحاجة.','water'),
  ('water-valves','تغيير محابس ووصلات المياه','plumbing','فك واستبدال محابس المياه والوصلات المتضررة في نقاط الحمام والمطبخ، ومراجعة مقاس القطع والتوصيل وفحص التسرب بعد العمل.','pipe'),
  ('breaker-replacement','فحص وتغيير القواطع الكهربائية','electrical','فحص سبب تكرار فصل القاطع ومراجعة الدائرة والأحمال المتصلة، ثم استبدال القاطع المتضرر بالمواصفات المناسبة بعد تحديد سبب المشكلة.','bolt'),
- ('socket-installation','تركيب أفياش ومفاتيح كهرباء','electrical','تركيب واستبدال الأفياش والمفاتيح ومراجعة التوصيلات والتثبيت داخل العلب، ثم فحص عمل النقاط التي جرى تركيبها.','bolt'),
- ('spotlights','تركيب سبوت لايت وإنارة LED','electrical','تركيب وتجديد السبوت لايت ووحدات LED، ومراجعة مقاس الفتحات والتوصيلات ومصدر تشغيل الوحدة وتجربة توزيع الإضاءة.','light'),
+ ('socket-installation','تركيب مقابس ومفاتيح كهربائية','electrical','تركيب واستبدال الأفياش والمفاتيح ومراجعة التوصيلات والتثبيت داخل العلب، ثم فحص عمل النقاط التي جرى تركيبها.','bolt'),
+ ('spotlights','تركيب سبوت لايت','electrical','تركيب وتجديد السبوت لايت مع مراجعة مقاس فتحات السقف والتوصيلات ومواصفات الوحدة، ثم تجربة الإضاءة بعد التثبيت.','light'),
  ('electrical-emergency','كهربائي للأعطال العاجلة','electrical','استقبال طلبات انقطاع الكهرباء المفاجئ أو تكرار فصل القاطع. اشرح الحالة وأرسل اسم الحي لتأكيد التوفر وتنسيق الزيارة.','clock'),
 ]
 SERVICES += SERVICE_EXTENSIONS
+SERVICES += [
+ ('faucet-repair','إصلاح صنابير المياه','plumbing','فحص التنقيط أو ضعف التدفق من الصنبور وتحديد سبب المشكلة في الصنبور أو الوصلة، ثم مراجعة التشغيل بعد الإصلاح.','water'),
+ ('faucet-installation','تركيب صنابير المياه','plumbing','تركيب أو استبدال صنابير المياه بعد مراجعة مقاس نقطة التغذية وحالة التوصيلات، ثم تجربة الصنبور وفحص الوصلات.','water'),
+ ('toilet-installation','تركيب مراحيض','plumbing','تركيب المرحاض ومراجعة توافق نقطة الصرف وتغذية المياه وطريقة التثبيت، ثم تجربة التعبئة والتصريف بعد العمل.','water'),
+ ('led-lighting','تركيب إنارة LED','electrical','تركيب أو استبدال وحدات LED في المنازل والشقق والفلل، مع مراجعة المقاس ونقطة التغذية وطريقة التثبيت وتجربة الإنارة.','light'),
+ ('lighting-repair','صيانة وإصلاح الإنارة المنزلية','electrical','فحص وحدات الإنارة التي تتقطع أو تتوقف ومراجعة المفتاح والتوصيلات المرتبطة بها، ثم تحديد الإصلاح المناسب وتجربة التشغيل.','light'),
+ ('lighting-replacement','استبدال وحدات الإنارة','electrical','استبدال وحدات الإنارة القديمة أو المتضررة بعد مراجعة المقاس وطريقة التثبيت وتوافق الوحدة البديلة مع نقاط الكهرباء القائمة.','light'),
+ ('lighting-point-wiring','تمديد وتجديد نقاط الإنارة','electrical','تجهيز أو تجديد نقاط الإنارة حسب توزيع الوحدات والأثاث ومرحلة التشطيب، مع مراجعة المسارات والتوصيلات قبل التنفيذ.','bolt'),
+]
+SERVICES_BY_SLUG = {service[0]: service for service in SERVICES}
+assert sorted(SERVICES_BY_SLUG) == sorted(slug for group in SERVICE_GROUPS.values() for slug in group['services'])
 SERVICE_COUNTS = {cat: sum(s[2] == cat for s in SERVICES) for cat in ('plumbing', 'electrical')}
 REVIEW_SNAPSHOT = B['reviewSnapshot']
 assert REVIEWS['asOf'] <= REVIEW_SNAPSHOT['asOf']  # Review quotations and the rating summary retain independent source dates.
@@ -168,6 +179,9 @@ def icon(name, variant='green'):
 def wa(text='مرحبًا، أرغب في الاستفسار عن خدمات السباكة وصيانة الكهرباء في الرياض.'):
     return B['whatsapp'] + '?text=' + quote(text)
 
+def service_request(name):
+    return wa(f'السلام عليكم، أحتاج خدمة {name}.\nالحي في الرياض: \nوصف المشكلة أو العمل المطلوب: ')
+
 def button(href, text, kind='primary', glyph='arrow', extra=''):
     external = ' target="_blank" rel="noopener noreferrer"' if href.startswith('https://') else ''
     glyph_markup = icon('whatsapp', 'white' if kind in ('primary', 'outline-light') else ('black' if kind == 'gold' else 'green')) if href.startswith(B['whatsapp']) else icon(glyph)
@@ -176,7 +190,7 @@ def button(href, text, kind='primary', glyph='arrow', extra=''):
 NAV = [('/plumber-riyadh','السباكة'),('/electrician-riyadh','الكهرباء'),('/services','كل الخدمات'),('/#work','أعمالنا'),('/#reviews','آراء العملاء'),('/blog','المقالات'),('/contact','تواصل معنا')]
 
 def header(path):
-    links=''.join(f'<a href="{u}"'+(' aria-current="page"' if u==path or (u=='/blog' and path.startswith('/blog/')) else '')+f'>{n}</a>' for u,n in NAV)
+    links=''.join(f'<a href="{u}"'+(' aria-current="page"' if u==path or (u in ('/blog', '/services') and path.startswith(u + '/')) else '')+f'>{n}</a>' for u,n in NAV)
     return f'''<div class="topline"><div class="wrap"><span>{icon('map')} النرجس، الرياض</span><span>{icon('clock')} على مدار الساعة · طوال الأسبوع</span><a href="{ESC(MAP)}" target="_blank" rel="noopener noreferrer">موقعنا على الخريطة {icon('arrow')}</a></div></div>
 <header class="site-header" id="top"><div class="wrap header-inner"><a class="brand" href="/" aria-label="أمين سرور، الصفحة الرئيسية"><img src="/assets/brand-mark.svg" width="52" height="52" alt=""><span><strong>أمين سرور</strong><small>للسباكة وصيانة الكهرباء</small></span></a><nav id="main-nav" aria-label="التنقل الرئيسي">{links}</nav><a class="header-call" aria-label="اتصل بأمين سرور على 0545350293" href="tel:{PHONE}">{icon('phone')}<b dir="ltr">{B['displayPhone']}</b></a><button class="menu-toggle" aria-label="فتح القائمة" aria-controls="main-nav" aria-expanded="false">{icon('menu')}</button></div></header>'''
 
@@ -189,15 +203,19 @@ def section_heading(kicker, title, intro='', link=''):
 def page_intro(title, intro, label):
     return f'<section class="page-intro"><div class="wrap"><nav class="breadcrumbs" aria-label="مسار التنقل"><a href="/">الرئيسية</a><span>/</span><span aria-current="page">{label}</span></nav><span class="eyebrow">أمين سرور · الرياض</span><h1>{title}</h1><p>{intro}</p></div></section>'
 
-def service_card(service, index, full=False):
+def service_card(service, index, current_path):
     slug, name, cat, desc, glyph=service
-    href=wa(f'مرحبًا، أرغب في طلب خدمة {name}. الموقع في حي: ')
+    href = service_request(name)
+    destination = SERVICE_DESTINATIONS[slug]
+    title = ESC(name)
+    if current_path != destination.split('#')[0]:
+        title = f'<a class="service-title-link" href="{destination}">{title}{icon("arrow")}</a>'
     details=MEDIA['services'][slug]
     photo=PHOTOS[details['photo']]
     category='أعمال السباكة' if cat=='plumbing' else 'الكهرباء والإنارة'
     points=''.join(f'<li>{icon("check")}<span>{ESC(point)}</span></li>' for point in details['points'])
     variant='white' if cat=='plumbing' else 'black'
-    return f'''<article class="service-card service-card--{cat}" id="{slug}" data-category="{cat}"><div class="service-media"><img src="/{photo['src']}" srcset="/{photo['small']} 480w, /{photo['src']} 800w" sizes="(max-width: 600px) 92vw, (max-width: 920px) 46vw, 410px" width="800" height="500" alt="{ESC(photo['alt'])}" loading="lazy" decoding="async"><span class="service-photo-badge">{icon(glyph)}{category}</span><span class="service-photo-number" aria-hidden="true">{index:02d}</span></div><div class="service-copy"><h3>{name}</h3><p>{desc}</p><ul class="service-points" aria-label="تفاصيل الخدمة">{points}</ul><div class="service-actions"><a class="service-order" href="{ESC(href)}" target="_blank" rel="noopener noreferrer" aria-label="اطلب خدمة {ESC(name)} عبر واتساب">{icon('whatsapp',variant)}<span>اطلب الخدمة</span>{icon('arrow')}</a><a class="service-phone" href="tel:{PHONE}" aria-label="اتصل لطلب خدمة {ESC(name)} على 0545350293">{icon('phone')}</a></div></div></article>'''
+    return f'''<article class="service-card service-card--{cat}" id="{slug}" data-category="{cat}"><div class="service-media"><img src="/{photo['src']}" srcset="/{photo['small']} 480w, /{photo['src']} 800w" sizes="(max-width: 600px) 92vw, (max-width: 920px) 46vw, 410px" width="800" height="500" alt="{ESC(photo['alt'])}" loading="lazy" decoding="async"><span class="service-photo-badge">{icon(glyph)}{category}</span><span class="service-photo-number" aria-hidden="true">{index:02d}</span></div><div class="service-copy"><h3>{title}</h3><p>{ESC(desc)}</p><ul class="service-points" aria-label="تفاصيل الخدمة">{points}</ul><div class="service-actions"><a class="service-order" href="{ESC(href)}" target="_blank" rel="noopener noreferrer" aria-label="اطلب خدمة {ESC(name)} عبر واتساب">{icon('whatsapp',variant)}<span>اطلب عبر واتساب</span>{icon('arrow')}</a><a class="service-phone" href="tel:{PHONE}" aria-label="اتصل لطلب خدمة {ESC(name)} على 0545350293">{icon('phone')}</a></div></div></article>'''
 
 def cta():
     return f'<section class="section cta-section" id="contact"><div class="wrap cta-panel"><div><span class="eyebrow">خلّنا نعرف وش تحتاج</span><h2>عطل بسيط أو تأسيس جديد؟<br>ابدأ بتواصل مباشر.</h2><p>اشرح طلبك وأرسل صور المكان واسم الحي. ننسّق معك الخدمة والموعد حسب تفاصيل الطلب.</p></div><div class="cta-actions">{button(wa(),'أرسل تفاصيل طلبك','gold','chat')}{button("tel:"+PHONE,'<b dir="ltr">'+B['displayPhone']+'</b>','outline-light','phone')}<span>{icon('clock')} العمل على مدار الساعة</span></div></div></section>'
@@ -228,8 +246,7 @@ def reviews(limit=None):
     return f'''<section class="section reviews-section" id="reviews" aria-labelledby="reviews-title"><div class="wrap"><div class="section-heading"><div><span class="eyebrow">تجارب من ملفنا على Google</span><h2 id="reviews-title">شغلنا، بعيون عملائنا.</h2><p>من تركيب المغاسل إلى صيانة الإنارة؛ هذه كلمات كتبها أصحاب التجربة عن التعامل وجودة العمل.</p></div>{button(MAP,'كل المراجعات على Google','outline','map')}</div><div class="review-summary"><div class="review-score"><span class="review-score-number" dir="ltr">{ESC(REVIEW_SNAPSHOT['rating'])}<small> / 5</small></span><span class="review-stars" role="img" aria-label="5 من 5 نجوم">{icon('star') * 5}</span></div><div class="review-summary-copy"><strong>تقييم أمين سرور على خرائط Google</strong><span>بناءً على {REVIEW_SNAPSHOT['count']} مراجعة منشورة</span><small>آخر تحقق: <time datetime="{REVIEW_SNAPSHOT['asOf']}">{arabic_date(REVIEW_SNAPSHOT['asOf'])}</time></small></div><div class="review-summary-note">تجربة حقيقية.<br><strong>وكلمة نعتز فيها.</strong></div></div><div class="review-carousel" data-review-carousel role="region" aria-roledescription="عارض تقييمات" aria-label="تقييمات العملاء"><div class="reviews-grid review-track" id="reviews-track" tabindex="0" aria-label="بطاقات تقييمات العملاء">{''.join(cards)}</div><div class="review-controls" hidden><div class="review-navigation"><button type="button" class="review-nav review-prev" aria-controls="reviews-track" aria-label="التقييم السابق">{icon('arrow')}</button><span class="review-counter" dir="rtl"></span><button type="button" class="review-nav review-next" aria-controls="reviews-track" aria-label="التقييم التالي">{icon('arrow')}</button></div><div class="review-dots" aria-label="اختر مجموعة تقييمات"></div><button type="button" class="review-playback" aria-pressed="false">إيقاف الحركة</button></div><span class="review-announcement" aria-live="polite" aria-atomic="true"></span></div><div class="reviews-footnote"><p>نعرض {len(selected)} مراجعة نصية عامة بالنص المنشور أو بمقتطف واضح منه. يشمل الإجمالي أيضًا التقييمات دون تعليق. قد يتغير العدد والتقييم على Google.</p><div class="review-invitation"><p>سبق وتعاملت مع أمين سرور؟ شارك تجربتك الصادقة؛ رأيك يساعدنا على تحسين الخدمة.</p><div class="review-invite-actions">{button(B['reviewUrl'],'شارك تجربتك على Google','outline','star')}<a href="{ESC(MAP)}" target="_blank" rel="noopener noreferrer">شاهد الملف التجاري {icon('arrow')}</a></div></div></div></div></section>'''
 
 def home():
-    featured=FEATURED
-    featured_cards=''.join(service_card(next(s for s in SERVICES if s[0]==slug),i+1) for i,slug in enumerate(featured))
+    featured_cards = ''.join(service_card(SERVICES_BY_SLUG[slug], i + 1, '/') for i, slug in enumerate(FEATURED))
     return f'''<section class="hero"><div class="wrap hero-grid"><div class="hero-copy"><span class="hero-location">{icon('map')} الرياض · حي النرجس <i></i> 24 / 7</span><p class="hero-business">{B['name']}</p><h1>سباك وكهربائي بالرياض.<br><span>شغل يريح بالك.</span></h1><p class="hero-lead">من أول تمديد إلى آخر لمسة إنارة. تأسيس وصيانة السباكة والكهرباء للمنازل والشقق والفلل في الرياض، بتواصل مباشر مع أمين سرور.</p><div class="hero-actions">{button(wa(),'اطلب خدمتك عبر واتساب','primary','chat')}{button('tel:'+PHONE,'اتصال مباشر','outline','phone')}</div><div class="hero-review"><span class="stars" aria-label="5 من 5 نجوم">★★★★★</span><strong dir="ltr">{REVIEW_SNAPSHOT['rating']}</strong><span>من {REVIEW_SNAPSHOT['count']} مراجعة على Google</span><a href="#reviews" aria-label="شاهد آراء العملاء وتقييمات جوجل">{icon('arrow')}</a></div></div><div class="hero-visual"><img class="hero-photo" src="/assets/interior.webp" srcset="/assets/interior-sm.webp 480w, /assets/interior.webp 960w" sizes="(max-width: 760px) 92vw, 46vw" width="720" height="960" alt="تركيبات مغاسل وإنارة داخلية من صور أعمال أمين سرور" fetchpriority="high" decoding="async"><div class="photo-label">{icon('check')} من صور أعمالنا الفعلية</div><div class="hero-ticket"><span class="ticket-icon">{icon('water')}{icon('bolt')}</span><div><strong>تأسيس. صيانة. إنارة.</strong><small>خدمات متكاملة لبيتك في الرياض</small></div>{icon('arrow')}</div><span class="visual-index" aria-hidden="true">AMEEN / HOME SERVICES</span></div></div></section>
 <section class="promise-strip" aria-label="لمحة عن الخدمة"><div class="wrap"><div>{icon('tool')}<span><strong>من التأسيس للصيانة</strong><small>سباكة وكهرباء وإنارة</small></span></div><div>{icon('phone')}<span><strong>تواصل مباشر</strong><small>اتصال أو واتساب</small></span></div><div>{icon('clock')}<span><strong>طوال أيام الأسبوع</strong><small>العمل على مدار الساعة</small></span></div></div></section>
 <section class="section services-section" id="services"><div class="wrap">{section_heading('وش يحتاج بيتك؟','لكل تفصيلة، خدمة تناسبها.','خدمات واضحة بصور من ملف النشاط، من تأسيس الشبكات إلى صيانة الأعطال وتركيب الأدوات الصحية والإنارة.',button('/services','كل الخدمات','outline'))}<div class="service-grid">{featured_cards}</div></div></section>
@@ -238,8 +255,9 @@ def home():
 def services_page():
     filters=f'<div class="catalog-toolbar"><div class="catalog-heading"><div><span class="eyebrow">صور من الملف التجاري · تفاصيل واضحة</span><h2>اختر الخدمة اللي تحتاجها.</h2></div><p class="filter-status" role="status" aria-live="polite">عرض {len(SERVICES)} خدمة</p></div><div class="catalog-controls"><div class="service-search"><label class="sr-only" for="service-search">ابحث عن خدمة</label><input id="service-search" type="search" autocomplete="off" placeholder="ابحث: تسرب، مغاسل، ثريات…"></div><div class="service-filters" role="group" aria-label="تصفية الخدمات"><button data-filter="all" aria-pressed="true">كل الخدمات <span>{len(SERVICES)}</span></button><button data-filter="plumbing" aria-pressed="false">السباكة <span>{SERVICE_COUNTS["plumbing"]}</span></button><button data-filter="electrical" aria-pressed="false">الكهرباء والإنارة <span>{SERVICE_COUNTS["electrical"]}</span></button></div></div></div>'
     empty='<div class="service-empty" hidden><h3>ما لقينا خدمة مطابقة للبحث.</h3><p>جرّب كلمة أقصر، أو اعرض كل خدمات السباكة والكهرباء.</p><button type="button" id="reset-services" class="button button-primary">اعرض كل الخدمات</button></div>'
-    ordered = [next(s for s in SERVICES if s[0] == slug) for slug in FEATURED] + [s for s in SERVICES if s[0] not in FEATURED]
-    return page_intro('خدمات السباكة والكهرباء في الرياض.','صور وتفاصيل تساعدك تختار الخدمة الأقرب لاحتياجك. ابحث أو صفّ الخدمات، ثم تواصل معنا لشرح الطلب وتنسيق الزيارة.','الخدمات')+'<section class="section service-catalog"><div class="wrap">'+filters+'<div class="service-grid">'+''.join(service_card(s,i+1,True) for i,s in enumerate(ordered))+'</div>'+empty+'</div></section>'+reviews(6)+faq()+cta()
+    ordered = [SERVICES_BY_SLUG[slug] for slug in FEATURED] + [s for s in SERVICES if s[0] not in FEATURED]
+    cards = ''.join(service_card(service, i + 1, '/services') for i, service in enumerate(ordered))
+    return page_intro('خدمات السباكة والكهرباء في الرياض.','اختر نوع العمل أو ابحث عن الخدمة. افتح تفاصيلها أو ابدأ طلبك مباشرة عبر واتساب.','الخدمات')+'<section class="section service-catalog"><div class="wrap">'+service_group_links()+filters+'<div class="service-grid">'+cards+'</div>'+empty+'</div></section>'+reviews(6)+faq()+cta()
 
 def about():
     return page_intro('أمين سرور. عناية بتفاصيل بيتك.','أعمال التأسيس والصيانة للسباكة والكهرباء في المنازل والشقق والفلل بمدينة الرياض.','عن أمين سرور')+f'''<section class="section"><div class="wrap about-layout"><div class="about-photo"><img src="/assets/basins.webp" width="720" height="960" alt="تجهيز وتركيب المغاسل من أعمال أمين سرور" loading="lazy"><span>{icon('water')} سباكة {icon('bolt')} كهرباء</span></div><div class="prose"><span class="eyebrow">عن النشاط</span><h2>خدمات بيتك،<br>بتواصل مباشر.</h2><p>{B['description']}</p><h3>توضيح الطلب يسهّل البداية</h3><p>سواء كان احتياجك إصلاح وصلة مياه أو تأسيس شبكة كهرباء أو تركيب ثريا، ابدأ بوصف الحالة وإرسال صور المكان. بهذه التفاصيل يمكن تنسيق الزيارة ومناقشة نطاق التنفيذ.</p><div class="about-facts"><span>{icon('map')} النرجس، الرياض</span><span>{icon('clock')} على مدار الساعة</span></div>{button('/services','استكشف الخدمات','primary')}{button(MAP,'ملفنا على Google','outline','map')}</div></div></section>'''+work()+reviews()+location()+cta()
@@ -266,6 +284,69 @@ def service_paths():
 def detail_faq(items):
     return '<section class="section faq-section"><div class="wrap faq-layout"><div><span class="eyebrow">قبل تنسيق الزيارة</span><h2>إجابات تساعدك تطلب الخدمة.</h2></div><div class="accordion">' + ''.join('<details><summary>' + ESC(q) + icon('plus') + '</summary><p>' + ESC(a) + '</p></details>' for q, a in items) + '</div></div></section>'
 
+def service_group_links(parent=None):
+    groups = sorted(SERVICE_GROUPS.items(), key=lambda item: item[1]['parent'] == '/electrician-riyadh')
+    if parent:
+        groups = [(path, group) for path, group in groups if group['parent'] == parent and path != parent]
+    links = ''.join(
+        f'<a href="{path}">{icon(group["icon"])}<span>{ESC(group["label"])}</span>{icon("arrow")}</a>'
+        for path, group in groups
+    )
+    return f'<nav class="service-group-links" aria-label="التصفح حسب نوع العمل">{links}</nav>'
+
+
+def service_detail_page(path, group):
+    label = ESC(group['label'])
+    parent = group['parent']
+    parent_label = 'خدمات السباكة' if parent == '/plumber-riyadh' else 'خدمات الكهرباء'
+    services = [SERVICES_BY_SLUG[slug] for slug in group['services']]
+    shortcuts = ''.join(f'<a href="#{slug}">{ESC(name)}</a>' for slug, name, *_ in services)
+    cards = ''.join(service_card(service, i + 1, path) for i, service in enumerate(services))
+    preparation = ''.join(f'<li>{icon("check")}<span>{ESC(item)}</span></li>' for item in group['prepare'])
+
+    return f'''
+<section class="page-intro service-topic-intro">
+  <div class="wrap">
+    <nav class="breadcrumbs" aria-label="مسار التنقل">
+      <a href="/">الرئيسية</a><span aria-hidden="true">/</span>
+      <a href="/services">كل الخدمات</a><span aria-hidden="true">/</span>
+      <span aria-current="page">{label}</span>
+    </nav>
+    <div class="service-topic-hero">
+      <div>
+        <h1>{ESC(group['title'])}</h1>
+        <p>{ESC(group['intro'])}</p>
+        <div class="service-topic-actions">
+          {button('#service-options', 'اختر الخدمة', 'primary', group['icon'])}
+          {button('tel:' + PHONE, 'اتصل بأمين سرور', 'outline', 'phone')}
+        </div>
+      </div>
+      <div class="service-topic-photo">{article_image(group['photo'], True)}</div>
+    </div>
+  </div>
+</section>
+<section class="section service-topic-options" aria-labelledby="service-options">
+  <div class="wrap">
+    <h2 id="service-options">اختر العمل المطلوب</h2>
+    <nav class="service-topic-shortcuts" aria-label="الخدمات في هذه الصفحة">{shortcuts}</nav>
+    <div class="service-grid">{cards}</div>
+  </div>
+</section>
+<section class="section service-topic-prep" aria-labelledby="visit-preparation">
+  <div class="wrap">
+    <div class="service-topic-note">
+      <h2 id="visit-preparation">وش ترسل قبل الزيارة؟</h2>
+      <ul>{preparation}</ul>
+      <nav class="service-topic-actions" aria-label="خدمات ومناطق مرتبطة">
+        {button(parent, parent_label, 'outline', group['icon'])}
+        {button('/north-riyadh', 'مناطق الخدمة', 'outline', 'map')}
+      </nav>
+    </div>
+  </div>
+</section>
+{detail_faq(group['faq'])}'''
+
+
 def service_guidance(category):
     plumbing = category == 'plumbing'
     items = [
@@ -279,22 +360,25 @@ def service_guidance(category):
         ('تحتاج تركيب ثريا', 'أرسل صورة الثريا والعدد ونوع السقف وصورة موضع التركيب المتاح من الأرض. تراجع طريقة التثبيت ونقطة الكهرباء قبل تنسيق العمل.', 'chandeliers', 'تركيب الثريات'),
         ('تجدّد إنارة المكان', 'حدد عدد الوحدات ونوعها وهل المطلوب استبدال إنارة قائمة أو إضافة نقاط جديدة. توضح هذه التفاصيل نطاق التمديدات والقطع وأعمال التركيب.', 'spotlights', 'تركيب السبوت لايت وإنارة LED'),
     ]
-    cards = ''.join('<article class="service-guide-card"><h3>' + ESC(title) + '</h3><p>' + ESC(text) + '</p><a class="local-text-link" href="/services#' + slug + '">' + ESC(label) + ' ' + icon('arrow') + '</a></article>' for title, text, slug, label in items)
+    cards = ''.join('<article class="service-guide-card"><h3>' + ESC(title) + '</h3><p>' + ESC(text) + '</p><a class="local-text-link" href="' + SERVICE_DESTINATIONS[slug] + '">' + ESC(label) + ' ' + icon('arrow') + '</a></article>' for title, text, slug, label in items)
     anchor = 'plumbing-request' if plumbing else 'electrical-request'
     guide_label = 'كيف تجهّز طلب السباكة؟' if plumbing else 'ما المعلومات التي يحتاجها الكهربائي؟'
     return '<section class="section service-guidance" aria-labelledby="service-guidance-title"><div class="wrap">' + section_heading('ابدأ بالعلامة التي تلاحظها', 'أي خدمة تناسب طلبك؟', 'اختر الحالة الأقرب، ثم راجع تفاصيل الخدمة. يُحدد نطاق الإصلاح بعد فحص الموقع.') + '<div class="service-guide-grid">' + cards + '</div><div class="service-guide-next"><h2 id="service-guidance-title">' + guide_label + '</h2><p>في دليل العميل أمثلة توضح وصف المشكلة والتفاصيل المطلوبة ومناقشة المواد ونطاق العمل قبل الزيارة.</p><a class="local-text-link" href="/blog#' + anchor + '">اقرأ دليل ' + ('طلب السباك' if plumbing else 'طلب الكهربائي') + ' ' + icon('arrow') + '</a></div></div></section>'
 
 def category_page(category):
     plumbing = category == 'plumbing'
+    path = '/plumber-riyadh' if plumbing else '/electrician-riyadh'
     title = 'سباك بالرياض للتأسيس والصيانة والتركيب.' if plumbing else 'كهربائي بالرياض لصيانة الأعطال وتركيب الإنارة.'
     intro = 'أمين سرور لخدمات السباكة وصيانة الكهرباء. خدمات سباكة للمنازل والشقق والفلل في النرجس والياسمين والعارض والملقا، ضمن نطاق الخدمة في الرياض. اشرح المشكلة أو أرسل صور القطع والمكان لتحديد نطاق الطلب وتنسيق الزيارة.' if plumbing else 'تواصل مباشرة مع أمين سرور لطلبات صيانة الكهرباء والتأسيس وتركيب الأفياش والقواطع والثريات والإنارة. نخدم النرجس والياسمين والعارض والملقا ضمن الرياض، ويُؤكد الموعد بعد معرفة العطل والموقع.'
     selected = [s for s in SERVICES if s[2] == category]
     needs = [('تسرب أو خلل في التصريف', 'اذكر موضع الماء أو بطء التصريف: تحت المغسلة، عند الخلاط، بجوار المرحاض أو قرب السخان. صورة الوصلات الظاهرة تساعد على فهم الطلب قبل الزيارة.'), ('تركيب قطعة أو استبدالها', 'أرسل صورة القطعة الحالية والجديدة، ووضح هل المواد متوفرة عندك. يشمل ذلك المغاسل والخلاطات وأطقم الدش والسخانات والمحابس.'), ('تأسيس أو تجديد التمديدات', 'حدد نوع الموقع ومرحلة التشطيب وعدد نقاط المياه والصرف المطلوبة. تُراجع المسارات وحالة الشبكة لتحديد الأعمال والمواد والتكلفة قبل التنفيذ.')] if plumbing else [('عطل في نقطة أو دائرة', 'وضح هل المشكلة في إنارة واحدة أو فيش أو جزء من المنزل، وهل يتكرر فصل القاطع عند تشغيل جهاز. وصف الحالة يساعد على تحديد ما يحتاج إلى فحص.'), ('تركيب إنارة أو تجهيزات', 'أرسل صورة الثريا أو وحدة الإنارة وصورة مكان التثبيت، مع العدد ونوع السقف. توضح هذه التفاصيل احتياجات التوصيل والتثبيت قبل تنسيق الموعد.'), ('تأسيس أو إضافة نقاط', 'حدد عدد الأفياش والمفاتيح ونقاط الإنارة ومرحلة التشطيب. تُراجع التمديدات والدوائر ومتطلبات الموقع قبل الاتفاق على نطاق التنفيذ.')]
     faq_items = [('هل يتوفر سباك في النرجس والياسمين والعارض والملقا؟', 'نعم، هذه الأحياء ضمن نطاق الخدمة المستهدف في شمال الرياض. أرسل اسم الحي ورابط الموقع ووصف الطلب لتأكيد التوفر والموعد المناسب.'), ('كيف تُحدد تكلفة السباكة؟', 'تختلف بحسب سبب المشكلة وحالة المواسير وإمكانية الوصول والقطع المطلوبة. وضح هل طلبك إصلاح أو تركيب أو تأسيس، وتأكد من الأعمال والمواد والتكلفة المتفق عليها قبل البدء.'), ('هل تشمل الخدمة كشف التسرب بدون تكسير أو التسليك بالضغط؟', 'المتاح هنا فحص وإصلاح التسربات وتسليك الأحواض وفتحات الصرف الداخلية حسب حالة الموقع. لا نفترض استخدام أجهزة كشف إلكترونية أو معدات ضغط أو شفط؛ تُوضح الطريقة المناسبة ونطاق العمل عند التواصل.'), ('هل يمكن طلب سباك بشكل عاجل؟', 'يستقبل النشاط طلبات السباكة على مدار الساعة وفق مواعيده الحالية. التوفر وموعد الزيارة يتأكدان عند التواصل بحسب الموقع وطبيعة الطلب.'), ('هل يمكن طلب تركيب قطع متوفرة عندي؟', 'أرسل صور القطع والمقاسات ومكان التركيب، ووضح هل التمديدات الحالية جاهزة. تساعد هذه المعلومات على تحديد متطلبات التركيب والمواد الإضافية ونطاق العمل قبل الزيارة.')] if plumbing else [('هل يتوفر كهربائي في أحياء شمال الرياض؟', 'تشمل التغطية النرجس والياسمين والعارض والملقا ضمن نطاق الرياض. أرسل اسم الحي وموقعك ونوع العطل أو عدد القطع المطلوب تركيبها لتنسيق الزيارة.'), ('هل تستبدلون القاطع بمجرد تكرار فصله؟', 'تكرار الفصل يحتاج إلى فحص السبب والدائرة والأحمال، ولا يحدد وحده أن القاطع تالف. يُحدد الإصلاح أو الاستبدال المناسب بعد الفحص.'), ('ما التفاصيل المطلوبة لتركيب ثريا أو سبوت لايت؟', 'أرسل صور القطع ومكان التركيب والعدد ونوع السقف، ووضح هل التمديدات ونقاط التعليق موجودة. يُراجع نطاق العمل ومتطلبات التثبيت والتوصيل قبل التنفيذ.'), ('هل يوجد سعر ثابت لصيانة الكهرباء؟', 'التكلفة مرتبطة بالعطل وحالة التمديدات وعدد النقاط والقطع والمواد المطلوبة. يُوضح نطاق الخدمة والتكلفة المتفق عليها قبل بدء العمل.'), ('هل الخدمة على مدار الساعة؟', 'مواعيد النشاط الحالية على مدار الساعة طوال الأسبوع. تواصل لتأكيد التوفر والموعد المناسب؛ لا تعني هذه المواعيد وعدًا بزمن وصول محدد.')]
     needs_html = ''.join('<article class="local-path-card"><h3>' + h + '</h3><p>' + p + '</p></article>' for h, p in needs)
-    cards = ''.join(service_card(s, i + 1) for i, s in enumerate(selected))
+    cards = service_group_links(path) + '<div class="service-grid">' + ''.join(
+        service_card(service, i + 1, path) for i, service in enumerate(selected)
+    ) + '</div>'
     request = wa('مرحبًا أمين سرور، أرغب في طلب ' + ('سباك' if plumbing else 'كهربائي') + ' في حي: . وصف الطلب: ')
-    return page_intro(title, intro, 'خدمات السباكة' if plumbing else 'خدمات الكهرباء') + '<section class="section"><div class="wrap local-request"><div><span class="eyebrow">من أول تواصل، خلّ الطلب واضح</span><h2>حدد الخدمة والموقع قبل الزيارة.</h2><p>خدمة إصلاح قائمة تختلف عن تركيب جديد أو تأسيس. اذكر نوع الموقع، وصور الحالة عند الإمكان، والقطع المتوفرة لديك؛ ثم ناقش الموعد والمواد والتكلفة المتفق عليها.</p></div><div class="local-request-actions">' + button(request, 'أرسل تفاصيل طلبك على واتساب', 'primary', 'chat') + button('tel:' + PHONE, 'اتصل بأمين سرور', 'outline', 'phone') + '</div></div></section><section class="section"><div class="wrap"><h2>كيف توضح طلبك؟</h2><div class="local-path-grid">' + needs_html + '</div></div></section><section class="section services-section"><div class="wrap">' + section_heading('أعمال ضمن نطاق النشاط', 'خدمات السباكة المتاحة.' if plumbing else 'خدمات الكهرباء والإنارة.', 'صور أصلية من ملف النشاط، وتفاصيل تساعدك تختار الخدمة المناسبة. لا تعني الصورة أنها توثق الطلب نفسه أو حيًا بعينه.') + '<div class="service-grid">' + cards + '</div></div></section><section class="section"><div class="wrap local-coverage"><h2>نخدم أحياء شمال الرياض.</h2><p>النرجس والياسمين والعارض والملقا ضمن نطاق خدمة الرياض. تأكد من إمكانية الزيارة وموعدها عند التواصل.</p>' + button('/north-riyadh', 'تفاصيل مناطق الخدمة', 'outline', 'map') + button('/services', 'كل خدمات السباكة والكهرباء', 'outline') + '</div></section>' + service_guidance(category) + article_teasers(['best-plumber-al-narjis', 'best-plumber-al-arid', 'plumbing-repair'] if plumbing else ['best-electrician-al-narjis', 'best-electrician-al-yasmin', 'best-electrician-al-arid']) + detail_faq(faq_items) + cta()
+    return page_intro(title, intro, 'خدمات السباكة' if plumbing else 'خدمات الكهرباء') + '<section class="section"><div class="wrap local-request"><div><span class="eyebrow">من أول تواصل، خلّ الطلب واضح</span><h2>حدد الخدمة والموقع قبل الزيارة.</h2><p>خدمة إصلاح قائمة تختلف عن تركيب جديد أو تأسيس. اذكر نوع الموقع، وصور الحالة عند الإمكان، والقطع المتوفرة لديك؛ ثم ناقش الموعد والمواد والتكلفة المتفق عليها.</p></div><div class="local-request-actions">' + button(request, 'أرسل تفاصيل طلبك على واتساب', 'primary', 'chat') + button('tel:' + PHONE, 'اتصل بأمين سرور', 'outline', 'phone') + '</div></div></section><section class="section"><div class="wrap"><h2>كيف توضح طلبك؟</h2><div class="local-path-grid">' + needs_html + '</div></div></section><section class="section services-section"><div class="wrap">' + section_heading('أعمال ضمن نطاق النشاط', 'خدمات السباكة المتاحة.' if plumbing else 'خدمات الكهرباء والإنارة.', 'صور أصلية من ملف النشاط، وتفاصيل تساعدك تختار الخدمة المناسبة. لا تعني الصورة أنها توثق الطلب نفسه أو حيًا بعينه.') + cards + '</div></section><section class="section"><div class="wrap local-coverage"><h2>نخدم أحياء شمال الرياض.</h2><p>النرجس والياسمين والعارض والملقا ضمن نطاق خدمة الرياض. تأكد من إمكانية الزيارة وموعدها عند التواصل.</p>' + button('/north-riyadh', 'تفاصيل مناطق الخدمة', 'outline', 'map') + button('/services', 'كل خدمات السباكة والكهرباء', 'outline') + '</div></section>' + service_guidance(category) + article_teasers(['best-plumber-al-narjis', 'best-plumber-al-arid', 'plumbing-repair'] if plumbing else ['best-electrician-al-narjis', 'best-electrician-al-yasmin', 'best-electrician-al-arid']) + detail_faq(faq_items) + cta()
 
 def north_riyadh_page():
     area_cards = ''.join('<article class="local-path-card" id="area-' + str(i + 1) + '"><span class="eyebrow">ضمن نطاق الخدمة</span><h2>حي ' + ESC(area) + '</h2><p>لطلب سباك أو كهربائي في حي ' + ESC(area) + '، أرسل موقع الخدمة ووصف المشكلة أو قائمة التركيبات المطلوبة. يُؤكد الموعد ونطاق العمل حسب تفاصيل الطلب.</p><div class="local-area-actions">' + button(wa('مرحبًا أمين سرور، أحتاج خدمة في حي ' + area + '. نوع الخدمة: . وصف الطلب: '), 'اطلب خدمة في ' + ESC(area), 'primary', 'chat') + '</div></article>' for i, area in enumerate(AREAS))
@@ -304,29 +388,45 @@ def north_riyadh_page():
 
 def graph(path, title, desc):
     url=BASE.rstrip('/')+path if path!='/' else BASE
+    detail = DETAIL_PAGES.get(path)
     address={'@type':'PostalAddress','streetAddress':B['streetAddress'],'addressLocality':B['addressLocality'],'addressRegion':B['addressRegion'],'postalCode':B['postalCode'],'addressCountry':'SA'}
     business={'@type':['Plumber','Electrician'],'@id':BASE+'#business','name':B['name'],'alternateName':'أمين سرور للسباكة والكهرباء','url':BASE,'telephone':PHONE,'description':B['description'],'logo':{'@id':BASE+'#logo'},'image':[BASE+'assets/interior.webp',BASE+'assets/basins.webp',BASE+'assets/showroom.webp'],'address':address,'areaServed':AREA_ENTITIES,'hasMap':MAP,'sameAs':[MAP,B['instagram']],'openingHours':B['openingHours'],'openingHoursSpecification':[{'@type':'OpeningHoursSpecification','dayOfWeek':['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],'opens':'00:00','closes':'23:59'}],'contactPoint':[{'@type':'ContactPoint','telephone':PHONE,'contactType':'customer service','availableLanguage':['Arabic'],'areaServed':AREA_ENTITIES,'url':B['whatsapp']}],'hasOfferCatalog':{'@id':BASE+'services#catalog'}}
     nodes=[business,{'@type':'ImageObject','@id':BASE+'#logo','url':BASE+'assets/brand-mark.svg','contentUrl':BASE+'assets/brand-mark.svg','caption':B['name']},{'@type':'WebSite','@id':BASE+'#website','url':BASE,'name':B['name'],'inLanguage':'ar-SA','publisher':{'@id':BASE+'#business'}},{'@type':'ContactPage' if path=='/contact' else ('AboutPage' if path=='/about' else 'WebPage'),'@id':url+'#webpage','url':url,'name':title,'description':desc,'isPartOf':{'@id':BASE+'#website'},'about':{'@id':BASE+'#business'},'inLanguage':'ar-SA','primaryImageOfPage':{'@id':BASE+'#primaryimage'}},{'@type':'ImageObject','@id':BASE+'#primaryimage','url':BASE+'assets/interior.webp','contentUrl':BASE+'assets/interior.webp','width':720,'height':960,'caption':'تركيبات مغاسل وإنارة داخلية من صور أعمال أمين سرور'}]
     nodes[2].update(COMPONENTS['websiteCreator'])
     if path != '/404':
         nodes[3]['dateModified'] = B.get('pageUpdatedOn', {}).get(path, B['contentUpdatedOn'])
-    if path in ('/plumber-riyadh', '/electrician-riyadh'):
-        category = 'plumbing' if path == '/plumber-riyadh' else 'electrical'
+    if path in SERVICE_GROUPS:
+        service_type = SERVICE_GROUPS[path]['label'] if detail else ('خدمات السباكة' if path == '/plumber-riyadh' else 'صيانة الكهرباء والإنارة')
         nodes[3]['mainEntity'] = {'@id': url + '#service'}
-        nodes.append({'@type': 'Service', '@id': url + '#service', 'name': title.split('|')[0].strip(), 'serviceType': 'خدمات السباكة' if category == 'plumbing' else 'صيانة الكهرباء والإنارة', 'url': url, 'description': desc, 'provider': {'@id': BASE + '#business'}, 'areaServed': AREA_ENTITIES, 'hasOfferCatalog': {'@id': url + '#catalog'}})
+        nodes.append({'@type': 'Service', '@id': url + '#service', 'name': title.split('|')[0].strip(), 'serviceType': service_type, 'url': url, 'description': desc, 'provider': {'@id': BASE + '#business'}, 'areaServed': AREA_ENTITIES, 'hasOfferCatalog': {'@id': url + '#catalog'}})
     if path!='/':
         label={'/services':'الخدمات','/about':'عن أمين سرور','/blog':'دليل العميل','/contact':'تواصل معنا','/plumber-riyadh':'السباكة بالرياض','/electrician-riyadh':'الكهرباء بالرياض','/north-riyadh':'مناطق الخدمة'}.get(path,title)
-        nodes.append({'@type':'BreadcrumbList','@id':url+'#breadcrumb','itemListElement':[{'@type':'ListItem','position':1,'name':'الرئيسية','item':BASE},{'@type':'ListItem','position':2,'name':label,'item':url}]})
+        crumbs = [('الرئيسية', BASE)]
+        if detail:
+            crumbs.append(('كل الخدمات', BASE + 'services'))
+            label = detail['label']
+        crumbs.append((label, url))
+        nodes.append({'@type':'BreadcrumbList','@id':url+'#breadcrumb','itemListElement':[
+            {'@type':'ListItem','position':i,'name':name,'item':item}
+            for i, (name, item) in enumerate(crumbs, 1)
+        ]})
         nodes[3]['breadcrumb']={'@id':url+'#breadcrumb'}
     selected=SERVICES if path=='/services' else ([s for s in SERVICES if s[0] in FEATURED] if path=='/' else [])
-    if path in ('/plumber-riyadh', '/electrician-riyadh'):
+    if path in CATEGORY_PAGES:
         selected = [s for s in SERVICES if s[2] == ('plumbing' if path == '/plumber-riyadh' else 'electrical')]
-    catalog_id = url + '#catalog' if path in ('/plumber-riyadh', '/electrician-riyadh') else BASE + 'services#catalog'
+    if detail:
+        selected = [SERVICES_BY_SLUG[slug] for slug in detail['services']]
+        photo = PHOTOS[detail['photo']]
+        image_id = url + '#primaryimage'
+        nodes[4].update({'@id':image_id,'url':BASE+photo['src'],'contentUrl':BASE+photo['src'],'width':800,'height':500,'caption':photo['alt']})
+        nodes[3]['primaryImageOfPage'] = {'@id':image_id}
+    catalog_url = url if path in SERVICE_GROUPS else BASE + 'services'
+    catalog_name = SERVICE_GROUPS[path]['label'] if path in SERVICE_GROUPS else 'خدمات أمين سرور للسباكة والكهرباء'
     if selected:
-        nodes.append({'@type':'OfferCatalog','@id':catalog_id,'name':'خدمات أمين سرور للسباكة والكهرباء','url':BASE+'services','itemListElement':[{'@type':'Offer','itemOffered':{'@id':BASE+'services#'+s[0]}} for s in selected]})
-        for slug,name,cat,desc,glyph in selected:
+        nodes.append({'@type':'OfferCatalog','@id':catalog_url + '#catalog','name':catalog_name,'url':catalog_url,'itemListElement':[{'@type':'Offer','itemOffered':{'@id':BASE+'services#'+s[0]}} for s in selected]})
+        for slug,name,cat,desc,_ in selected:
             photo=PHOTOS[MEDIA['services'][slug]['photo']]
-            nodes.append({'@type':'Service','@id':BASE+'services#'+slug,'name':name,'image':{'@type':'ImageObject','url':BASE+photo['src'],'contentUrl':BASE+photo['src'],'width':800,'height':500,'caption':photo['alt']},'serviceType':'السباكة' if cat=='plumbing' else 'الكهرباء والإنارة','description':desc,'url':BASE+'services#'+slug,'provider':{'@id':BASE+'#business'},'areaServed':AREA_ENTITIES,'availableChannel':{'@type':'ServiceChannel','serviceUrl':wa('مرحبًا، أرغب في طلب خدمة '+name),'servicePhone':{'@type':'ContactPoint','telephone':PHONE,'availableLanguage':'Arabic'}}})
+            nodes.append({'@type':'Service','@id':BASE+'services#'+slug,'name':name,'image':{'@type':'ImageObject','url':BASE+photo['src'],'contentUrl':BASE+photo['src'],'width':800,'height':500,'caption':photo['alt']},'serviceType':'السباكة' if cat=='plumbing' else 'الكهرباء والإنارة','description':desc,'url':BASE.rstrip('/')+SERVICE_DESTINATIONS[slug],'provider':{'@id':BASE+'#business'},'areaServed':AREA_ENTITIES,'availableChannel':{'@type':'ServiceChannel','serviceUrl':service_request(name),'servicePhone':{'@type':'ContactPoint','telephone':PHONE,'availableLanguage':'Arabic'}}})
     post = POST_BY_ROUTE.get(path)
     if path == '/blog':
         nodes[3]['@type'] = 'CollectionPage'
@@ -345,14 +445,15 @@ def graph(path, title, desc):
 def render(path,title,description,body,noindex=False):
     canonical=BASE if path=='/' else BASE.rstrip('/')+path
     post = POST_BY_ROUTE.get(path)
-    share_photo = PHOTOS[post['photo']] if post else None
+    image_source = post or DETAIL_PAGES.get(path)
+    share_photo = PHOTOS[image_source['photo']] if image_source else None
     share_url = BASE + share_photo['src'] if share_photo else BASE + 'assets/share-ameen.jpg?v=20261017-water-electric'
     share_alt = share_photo['alt'] if share_photo else 'أمين سرور للسباكة وصيانة الكهرباء في الرياض'
-    share_width, share_height = (800, 500) if post else (1200, 630)
+    share_width, share_height = (800, 500) if share_photo else (1200, 630)
     og_type = 'article' if post else 'website'
     article_meta = f'<meta property="article:published_time" content="{PUBLISHED}"><meta property="article:modified_time" content="{post.get("modified", PUBLISHED)}"><meta property="article:section" content="{"السباكة" if post["category"] == "plumbing" else "الكهرباء والإنارة"}">' if post else ''
     article_css = '<link rel="stylesheet" href="/articles.css?v=20261116-guides">' if post or path in ('/', '/blog', '/plumber-riyadh', '/electrician-riyadh') else ''
-    cards_css='<link rel="stylesheet" href="/service-cards.css?v=20261017-photos">' if path in ('/', '/services', '/plumber-riyadh', '/electrician-riyadh') else ''
+    cards_css='<link rel="stylesheet" href="/service-cards.css?v=20261119-service-links">' if path in ('/', '/services') or path in SERVICE_GROUPS else ''
     reviews_css='<link rel="stylesheet" href="/reviews.css?v=20261116-carousel"><script src="/reviews.js?v=20261116-carousel" defer></script>' if path in ('/', '/services', '/about') else ''
     schema=json.dumps(graph(path,title,description),ensure_ascii=False,separators=(',',':')).replace('</','<\\/')
     return f'''<!doctype html>
@@ -370,6 +471,10 @@ PAGES += [
  ('/electrician-riyadh', 'electrician-riyadh.html', 'كهربائي بالرياض | صيانة الأعطال وتركيب الإنارة — أمين سرور', 'كهربائي للمنازل والفلل في النرجس والياسمين والعارض والملقا. صيانة أعطال وقواطع وأفياش وتركيب ثريات وإنارة. اطلب الخدمة من أمين سرور: 0545350293.', category_page('electrical')),
  ('/north-riyadh', 'north-riyadh.html', 'سباك وكهربائي شمال الرياض | النرجس والياسمين والعارض والملقا', 'خدمات أمين سرور للسباكة والكهرباء في أحياء شمال الرياض: النرجس والياسمين والعارض والملقا. تعرّف على نطاق الأعمال وجهز طلبك لتنسيق الزيارة.', north_riyadh_page()),
 ]
+PAGES += [
+    (path, path.lstrip('/') + '.html', group['title'] + ' | أمين سرور', group['description'], service_detail_page(path, group))
+    for path, group in DETAIL_PAGES.items()
+]
 PAGES += [(article_route(post), 'blog/' + post['slug'] + '.html', post['title'] + ' | أمين سرور', post['description'], article_page(post)) for post in POSTS]
 for path,filename,title,desc,body in PAGES:
     target = ROOT / filename
@@ -381,7 +486,8 @@ for path, *_ in PAGES:
     loc = BASE if path == '/' else BASE.rstrip('/') + path
     post = POST_BY_ROUTE.get(path)
     modified = post.get('modified', PUBLISHED) if post else B.get('pageUpdatedOn', {}).get(path, B['contentUpdatedOn'])
-    image_entry = '<image:image><image:loc>' + BASE + PHOTOS[post['photo']]['src'] + '</image:loc></image:image>' if post else ''
+    image_source = post or DETAIL_PAGES.get(path)
+    image_entry = '<image:image><image:loc>' + BASE + PHOTOS[image_source['photo']]['src'] + '</image:loc></image:image>' if image_source else ''
     entries += '<url><loc>' + ESC(loc) + '</loc><lastmod>' + modified + '</lastmod>' + image_entry + '</url>'
 (ROOT/'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">'+entries+'</urlset>')
 (ROOT/'robots.txt').write_text('User-agent: *\nAllow: /\n\nSitemap: '+BASE+'sitemap.xml\n')

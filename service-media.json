@@ -363,7 +363,7 @@
     "spotlights": {
       "photo": "lighting",
       "points": [
-        "سبوت لايت وLED",
+        "مقاس فتحات السقف",
         "مراجعة التوصيل"
       ]
     },
@@ -372,6 +372,55 @@
       "points": [
         "أعطال مفاجئة",
         "تأكيد التوفر"
+      ]
+    },
+    "faucet-repair": {
+      "photo": "basins",
+      "points": [
+        "فحص التنقيط",
+        "مراجعة التدفق"
+      ]
+    },
+    "faucet-installation": {
+      "photo": "basins",
+      "points": [
+        "مطابقة المقاس",
+        "تجربة تدفق المياه"
+      ]
+    },
+    "toilet-installation": {
+      "photo": "sanitary",
+      "points": [
+        "مراجعة نقطة الصرف",
+        "تجربة التعبئة والتصريف"
+      ]
+    },
+    "led-lighting": {
+      "photo": "lighting",
+      "points": [
+        "مقاس نقطة التركيب",
+        "تجربة وحدة الإنارة"
+      ]
+    },
+    "lighting-repair": {
+      "photo": "lighting",
+      "points": [
+        "فحص الوحدة والمفتاح",
+        "تحديد سبب التوقف"
+      ]
+    },
+    "lighting-replacement": {
+      "photo": "lighting",
+      "points": [
+        "توافق البديل",
+        "مراجعة طريقة التثبيت"
+      ]
+    },
+    "lighting-point-wiring": {
+      "photo": "electrical-wiring",
+      "points": [
+        "توزيع النقاط",
+        "مراجعة المسارات"
       ]
     }
   }

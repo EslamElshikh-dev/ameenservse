@@ -30,11 +30,18 @@
   "contentUpdatedOn": "2026-11-11",
   "reviewUrl": "https://g.page/r/CdPBN0Z2RTsLEBM/review",
   "pageUpdatedOn": {
-    "/": "2026-11-16",
-    "/services": "2026-11-16",
+    "/": "2026-11-19",
+    "/services": "2026-11-19",
     "/about": "2026-11-16",
     "/blog": "2026-11-16",
-    "/plumber-riyadh": "2026-11-16",
-    "/electrician-riyadh": "2026-11-16"
+    "/contact": "2026-11-19",
+    "/plumber-riyadh": "2026-11-19",
+    "/electrician-riyadh": "2026-11-19",
+    "/services/water-leak-repair": "2026-11-19",
+    "/services/bathroom-fixtures": "2026-11-19",
+    "/services/water-heaters": "2026-11-19",
+    "/services/plumbing-networks": "2026-11-19",
+    "/services/electrical-installation": "2026-11-19",
+    "/services/lighting": "2026-11-19"
   }
 }

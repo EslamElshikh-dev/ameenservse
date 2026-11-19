@@ -1,4 +1,4 @@
-/* Photo-led service cards. Shared by the homepage and the complete catalogue. */
+/* Photo-led service cards and service navigation. */
 .service-card {
   padding: 0;
   overflow: hidden;
@@ -29,6 +29,12 @@
 .service-copy { display: flex; flex-direction: column; flex: 1; padding: 23px; border-top: 3px solid #1687a1; }
 .service-card--electrical .service-copy { border-top-color: #f4b63e; }
 .service-copy h3 { margin: 0 0 12px; font-size: 1.1rem; line-height: 1.7; color: #143348; }
+.service-title-link {
+  display: inline-flex; align-items: center; gap: 9px; width: fit-content;
+  min-height: 44px; color: #075a77; text-decoration: underline; text-underline-offset: .22em;
+}
+.service-title-link .icon { flex: 0 0 16px; width: 16px; height: 16px; }
+.service-card:target { outline: 2px solid #1687a1; outline-offset: 4px; }
 .service-copy > p { margin: 0 0 21px; font-size: .77rem; line-height: 2.1; flex: 1; color: #536c7b; }
 .service-points {
   display: flex; flex-wrap: wrap; gap: 7px 13px;
@@ -75,6 +81,53 @@
 .service-empty { padding: 65px 25px; text-align: center; background: #fff; border: 1px solid #d7e5ee; border-radius: 20px; }
 .service-empty h3 { font-size: 1.25rem; }
 .service-empty p { margin: 13px auto 22px; max-width: 530px; font-size: .82rem; }
+
+.service-group-links {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 10px; margin-block: 0 26px;
+}
+.service-group-links a {
+  display: grid; grid-template-columns: 18px minmax(0, 1fr) 15px; align-items: center;
+  gap: 9px; min-height: 52px; padding: 11px 14px;
+  border: 1px solid #ccdde8; border-radius: 11px; background: #fff;
+  font-size: .79rem; font-weight: 700; color: #075a77;
+}
+.service-group-links .icon { width: 100%; height: auto; aspect-ratio: 1; }
+.service-group-links a:hover, .service-topic-shortcuts a:hover { background: #e5f0f7; }
+
+.service-topic-hero {
+  display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr);
+  align-items: center; gap: clamp(24px, 5vw, 72px);
+}
+.service-topic-intro h1 { font-size: clamp(2rem, 3.6vw, 3.35rem); }
+.service-topic-photo { border: 1px solid #cddfe9; border-radius: 22px; overflow: hidden; }
+.service-topic-photo img { width: 100%; aspect-ratio: 8 / 5; height: auto; object-fit: cover; display: block; }
+.service-topic-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-block-start: 23px; }
+.service-topic-options { padding-block-end: 35px; }
+.service-topic-shortcuts { display: flex; flex-wrap: wrap; gap: 8px; margin-block: 16px 24px; }
+.service-topic-shortcuts a {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 7px 13px;
+  border: 1px solid #cddfe9; border-radius: 9px; background: #fff;
+  color: #075a77; font-size: .76rem; font-weight: 700;
+}
+.service-topic-prep { padding-block: 24px 42px; }
+.service-topic-note {
+  padding: clamp(20px, 4vw, 36px); border: 1px solid #d5e4ed;
+  border-inline-start: 4px solid #1687a1; border-radius: 16px; background: #fff;
+}
+.service-topic-note h2 { font-size: clamp(1.2rem, 2.4vw, 1.8rem); }
+.service-topic-note ul { display: grid; gap: 10px; padding: 0; margin: 15px 0 0; list-style: none; }
+.service-topic-note li { display: flex; align-items: start; gap: 9px; color: #536c7b; }
+.service-topic-note li .icon { flex: 0 0 16px; width: 16px; height: 16px; margin-block-start: .3em; color: #075a77; }
+
+@media (max-width:760px) {
+  .service-topic-hero { grid-template-columns: 1fr; gap: 20px; }
+  .service-topic-photo img { max-height: 290px; }
+  .service-topic-intro .breadcrumbs { flex-wrap: wrap; }
+  .service-group-links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .service-group-links a { grid-template-columns: 16px minmax(0, 1fr); gap: 7px; padding-inline: 9px; font-size: .72rem; }
+  .service-group-links a .icon:last-child { display: none; }
+}
 @media (hover:hover) {
   .service-card:hover { transform: translateY(-4px); border-color: #adcedf; box-shadow: 0 14px 35px #10364d10; }
   .service-card:hover .service-media > img { transform: scale(1.035); }
