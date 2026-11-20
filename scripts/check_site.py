@@ -10,6 +10,7 @@ from service_routes import DETAIL_PAGES, SERVICE_DESTINATIONS
 ROOT = Path(__file__).resolve().parent.parent
 BUSINESS = json.loads((ROOT / 'business-data.json').read_text())
 BASE = BUSINESS['url']
+VERIFICATION_FILE = ROOT / 'google30c987a304e39bc9.html'
 
 
 class Page(HTMLParser):
@@ -21,11 +22,22 @@ class Page(HTMLParser):
         self._title, self._h1 = False, False
         self.schemas, self._schema = [], None
         self.service_cards, self._service = {}, None
+        self.area_cards, self._area = {}, None
+        self._area_heading, self._area_link = False, None
         self.feed(path.read_text())
 
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
         classes = set(a.get('class', '').split())
+        if tag == 'article' and 'local-path-card' in classes and a.get('id', '').startswith('area-'):
+            self._area = a['id']
+            self.area_cards[self._area] = {'heading': '', 'links': []}
+        if self._area is not None:
+            if tag == 'h2':
+                self._area_heading = True
+            if tag == 'a':
+                self._area_link = {'href': a['href'], 'text': ''}
+                self.area_cards[self._area]['links'].append(self._area_link)
         if tag == 'article' and 'service-card' in classes:
             self._service = a['id']
             self.service_cards[self._service] = {}
@@ -55,6 +67,10 @@ class Page(HTMLParser):
             self.refs.extend(source.strip().split()[0] for source in a['srcset'].split(','))
 
     def handle_data(self, data):
+        if self._area is not None and self._area_heading:
+            self.area_cards[self._area]['heading'] += data
+        if self._area_link is not None:
+            self._area_link['text'] += data
         if self._title:
             self.title += data
         if self._h1:
@@ -65,6 +81,11 @@ class Page(HTMLParser):
     def handle_endtag(self, tag):
         if tag == 'article':
             self._service = None
+            self._area = None
+        if tag == 'h2':
+            self._area_heading = False
+        if tag == 'a':
+            self._area_link = None
         if tag == 'title':
             self._title = False
         if tag == 'h1':
@@ -81,8 +102,46 @@ def file_for(url_path):
     return path if path.suffix else path.with_suffix('.html')
 
 
+def check_area_requests(by_route):
+    districts = [
+        ('النرجس', 'best-electrician-al-narjis'),
+        ('الياسمين', 'best-electrician-al-yasmin'),
+        ('العارض', 'best-electrician-al-arid'),
+        ('الملقا', 'best-electrician-al-malqa'),
+    ]
+    north = by_route['/north-riyadh']
+    assert 'service-areas' in north.ids
+    assert '/north-riyadh#service-areas' in by_route['/electrician-riyadh'].refs
+    assert set(north.area_cards) == {f'area-{i}' for i in range(1, 5)}, 'district card count'
+    requests = []
+    for i, (area, guide) in enumerate(districts, start=1):
+        card = north.area_cards[f'area-{i}']
+        assert card['heading'] == 'حي ' + area, (area, 'district heading')
+        expected_messages = {
+            'كهربائي': '\n'.join([
+                f'السلام عليكم، أحتاج كهربائي في حي {area}.',
+                'نوع الخدمة الكهربائية: ',
+                'وصف المشكلة أو العمل المطلوب: ',
+            ]),
+            'سباك': f'السلام عليكم، أحتاج خدمة سباكة في حي {area}. وصف الطلب: ',
+        }
+        for service, expected_message in expected_messages.items():
+            matches = [link for link in card['links'] if link['text'].strip() == f'اطلب {service} في {area}']
+            assert len(matches) == 1, (area, service, 'district request label')
+            order_url = urlsplit(matches[0]['href'])
+            assert order_url._replace(query='').geturl() == BUSINESS['whatsapp'], (area, service, 'WhatsApp number')
+            assert parse_qs(order_url.query) == {'text': [expected_message]}, (area, service, 'district WhatsApp message')
+            requests.append(matches[0]['href'])
+        assert len([link for link in card['links'] if link['href'].startswith(BUSINESS['whatsapp'])]) == 2, (area, 'district request count')
+        guide_links = [link for link in card['links'] if link['href'] == '/blog/' + guide]
+        assert len(guide_links) == 1 and area in guide_links[0]['text'], (area, 'district guide')
+    assert len(set(requests)) == 8, 'eight unique district requests'
+
+
 def check():
-    pages = {p: Page(p) for p in ROOT.rglob('*.html') if '.git' not in p.parts}
+    assert VERIFICATION_FILE.is_file(), 'missing Google ownership verification file'
+    assert VERIFICATION_FILE.read_bytes().rstrip(b'\r\n') == ('google-site-verification: ' + VERIFICATION_FILE.name).encode(), 'Google ownership verification content'
+    pages = {p: Page(p) for p in ROOT.rglob('*.html') if '.git' not in p.parts and p != VERIFICATION_FILE}
     by_route = {'/' if p == ROOT / 'index.html' else '/' + p.relative_to(ROOT).with_suffix('').as_posix(): page for p, page in pages.items()}
     checked = 0
     for path, page in pages.items():
@@ -119,6 +178,8 @@ def check():
         post = BY_SLUG.get(route.removeprefix('/blog/')) if route.startswith('/blog/') else None
         expected = post.get('modified', PUBLISHED) if post else BUSINESS.get('pageUpdatedOn', {}).get(route, BUSINESS['contentUpdatedOn'])
         assert modified == expected, (route, 'lastmod')
+        web_page = [node for node in pages[local].schemas[0]['@graph'] if node.get('@id') == loc + '#webpage']
+        assert len(web_page) == 1 and web_page[0].get('dateModified') == modified, (route, 'WebPage dateModified vs lastmod')
         if post:
             image = entry.find('{http://www.google.com/schemas/sitemap-image/1.1}image/{http://www.google.com/schemas/sitemap-image/1.1}loc')
             assert image is not None and file_for(urlsplit(image.text).path).is_file(), (route, 'sitemap image')
@@ -163,6 +224,7 @@ def check():
     assert set(by_route) - {'/404'} <= reachable, 'orphan content pages'
     nav_paths = {'/plumber-riyadh', '/electrician-riyadh'}
     assert all(nav_paths.issubset(set(p.refs)) for p in pages.values())
+    check_area_requests(by_route)
     service_ids = set(json.loads((ROOT / 'service-media.json').read_text())['services'])
     directory = by_route['/services']
     assert service_ids == set(directory.service_cards) == set(SERVICE_DESTINATIONS), 'missing service destinations'
@@ -207,7 +269,7 @@ def check():
             assert escape(review['text']) in content, (filename, review['author'], 'quotation')
             assert review['url'] in pages[ROOT / filename].refs
         assert 'AggregateRating' not in content and '"@type": "Review"' not in content
-    print(f'PASS: {len(pages)} HTML pages, {checked} local references, {len(urls)} sitemap URLs and {len(service_ids)} service destinations and WhatsApp messages.')
+    print(f'PASS: {len(pages)} HTML pages, {checked} local references, {len(urls)} sitemap URLs with matching page dates, {len(service_ids)} service destinations, 8 district WhatsApp requests and the Google verification file.')
 
 
 if __name__ == '__main__':
