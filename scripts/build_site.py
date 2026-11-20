@@ -410,7 +410,11 @@ def north_riyadh_page():
         actions = button(general_request, f'اطلب خدمة في {area}', 'primary', 'chat')
         if area in electrical_requests:
             service, instructions, guide = electrical_requests[area]
-            electrical_message = f'السلام عليكم، أحتاج {service} في حي {area}. وصف الطلب: '
+            electrical_message = (
+                f'السلام عليكم، أحتاج كهربائي في حي {area}.\n'
+                'نوع الخدمة الكهربائية: \n'
+                'وصف المشكلة أو العمل المطلوب: '
+            )
             plumbing_message = f'السلام عليكم، أحتاج خدمة سباكة في حي {area}. وصف الطلب: '
             details = (
                 f'<h3>{ESC(service)}</h3><p>{ESC(instructions)}</p>'

@@ -84,3 +84,11 @@ Validation: `python3 scripts/build_site.py`, `python3 scripts/check_site.py`, `n
 مراجع التنفيذ: [Google: المحتوى المفيد](https://developers.google.com/search/docs/fundamentals/creating-helpful-content)، [بيانات المقالات](https://developers.google.com/search/docs/appearance/structured-data/article)، [خريطة الموقع](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap)، [سياسات المحتوى المتشابه والمداخل](https://developers.google.com/search/docs/essentials/spam-policies). مرجع السلامة العام المرتبط في دليل الكهربائي: [ESFI](https://www.esfi.org/home-electrical-safety/). لا يقدم المحتوى تعليمات لفك توصيلات أو تغيير قدرات أو تنفيذ تمديدات ذاتيًا.
 
 التحقق: `python3 scripts/build_site.py` ثم `python3 scripts/check_site.py`. تشمل الفحوص المسارات المتداخلة، والعناوين المطلوبة، وخصوصية الوصف والصور، وتطابق المقال مع JSON-LD، وروابط الأقسام والمقالات والخدمات، وخريطة الموقع، وإمكانية الوصول إلى كل صفحة من الرئيسية.
+
+## طلبات الأحياء وإعداد إثبات الملكية — 20 نوفمبر 2026
+
+أزرار طلب الكهربائي في النرجس والياسمين والعارض والملقا تجهز طلب كهربائي عامًا مع اسم الحي وحقل نوع الخدمة ووصف العمل. الأعمال المذكورة في البطاقات أمثلة لا تُفرض في الرسالة؛ تبقى طلبات السباكة وأدلة الأحياء مرتبطة بالخدمة والحي الصحيحين.
+
+`google30c987a304e39bc9.html` هو الملف الأصلي الذي نزّل من Google Search Console لخاصية `https://ameenservse.vercel.app/` وحساب `info@eslam-elshikh.com`. يُحفظ في جذر الموقع دون تغيير محتواه، ويُستثنى وحده من صفحات المحتوى ومن خريطة الموقع. وجوده في الفرع لا يعني اكتمال إثبات الملكية: بعد الموافقة على الدمج والنشر، افحص وصول الملف ومحتواه علنًا ثم أكمل التحقق في Search Console. يجب إبقاؤه بعد نجاح التحقق.
+
+يفحص `python3 scripts/check_site.py` الطلبات الثمانية، وتطابق كل حي وخدمة ورقم واتساب، وأدلة الأحياء والربط من صفحة الكهربائي، وتطابق `dateModified` لعنصر كل صفحة مع `lastmod`، ووجود ملف التحقق ومحتواه.
