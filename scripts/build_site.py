@@ -378,12 +378,59 @@ def category_page(category):
         service_card(service, i + 1, path) for i, service in enumerate(selected)
     ) + '</div>'
     request = wa('مرحبًا أمين سرور، أرغب في طلب ' + ('سباك' if plumbing else 'كهربائي') + ' في حي: . وصف الطلب: ')
-    return page_intro(title, intro, 'خدمات السباكة' if plumbing else 'خدمات الكهرباء') + '<section class="section"><div class="wrap local-request"><div><span class="eyebrow">من أول تواصل، خلّ الطلب واضح</span><h2>حدد الخدمة والموقع قبل الزيارة.</h2><p>خدمة إصلاح قائمة تختلف عن تركيب جديد أو تأسيس. اذكر نوع الموقع، وصور الحالة عند الإمكان، والقطع المتوفرة لديك؛ ثم ناقش الموعد والمواد والتكلفة المتفق عليها.</p></div><div class="local-request-actions">' + button(request, 'أرسل تفاصيل طلبك على واتساب', 'primary', 'chat') + button('tel:' + PHONE, 'اتصل بأمين سرور', 'outline', 'phone') + '</div></div></section><section class="section"><div class="wrap"><h2>كيف توضح طلبك؟</h2><div class="local-path-grid">' + needs_html + '</div></div></section><section class="section services-section"><div class="wrap">' + section_heading('أعمال ضمن نطاق النشاط', 'خدمات السباكة المتاحة.' if plumbing else 'خدمات الكهرباء والإنارة.', 'صور أصلية من ملف النشاط، وتفاصيل تساعدك تختار الخدمة المناسبة. لا تعني الصورة أنها توثق الطلب نفسه أو حيًا بعينه.') + cards + '</div></section><section class="section"><div class="wrap local-coverage"><h2>نخدم أحياء شمال الرياض.</h2><p>النرجس والياسمين والعارض والملقا ضمن نطاق خدمة الرياض. تأكد من إمكانية الزيارة وموعدها عند التواصل.</p>' + button('/north-riyadh', 'تفاصيل مناطق الخدمة', 'outline', 'map') + button('/services', 'كل خدمات السباكة والكهرباء', 'outline') + '</div></section>' + service_guidance(category) + article_teasers(['best-plumber-al-narjis', 'best-plumber-al-arid', 'plumbing-repair'] if plumbing else ['best-electrician-al-narjis', 'best-electrician-al-yasmin', 'best-electrician-al-arid']) + detail_faq(faq_items) + cta()
+    return page_intro(title, intro, 'خدمات السباكة' if plumbing else 'خدمات الكهرباء') + '<section class="section"><div class="wrap local-request"><div><span class="eyebrow">من أول تواصل، خلّ الطلب واضح</span><h2>حدد الخدمة والموقع قبل الزيارة.</h2><p>خدمة إصلاح قائمة تختلف عن تركيب جديد أو تأسيس. اذكر نوع الموقع، وصور الحالة عند الإمكان، والقطع المتوفرة لديك؛ ثم ناقش الموعد والمواد والتكلفة المتفق عليها.</p></div><div class="local-request-actions">' + button(request, 'أرسل تفاصيل طلبك على واتساب', 'primary', 'chat') + button('tel:' + PHONE, 'اتصل بأمين سرور', 'outline', 'phone') + '</div></div></section><section class="section"><div class="wrap"><h2>كيف توضح طلبك؟</h2><div class="local-path-grid">' + needs_html + '</div></div></section><section class="section services-section"><div class="wrap">' + section_heading('أعمال ضمن نطاق النشاط', 'خدمات السباكة المتاحة.' if plumbing else 'خدمات الكهرباء والإنارة.', 'صور أصلية من ملف النشاط، وتفاصيل تساعدك تختار الخدمة المناسبة. لا تعني الصورة أنها توثق الطلب نفسه أو حيًا بعينه.') + cards + '</div></section><section class="section"><div class="wrap local-coverage"><h2>نخدم أحياء شمال الرياض.</h2><p>النرجس والياسمين والعارض والملقا ضمن نطاق خدمة الرياض. تأكد من إمكانية الزيارة وموعدها عند التواصل.</p>' + button('/north-riyadh' if plumbing else '/north-riyadh#service-areas', 'تفاصيل مناطق الخدمة' if plumbing else 'جهّز طلب الكهرباء حسب الحي', 'outline', 'map') + button('/services', 'كل خدمات السباكة والكهرباء', 'outline') + '</div></section>' + service_guidance(category) + article_teasers(['best-plumber-al-narjis', 'best-plumber-al-arid', 'plumbing-repair'] if plumbing else ['best-electrician-al-narjis', 'best-electrician-al-yasmin', 'best-electrician-al-arid']) + detail_faq(faq_items) + cta()
 
 def north_riyadh_page():
-    area_cards = ''.join('<article class="local-path-card" id="area-' + str(i + 1) + '"><span class="eyebrow">ضمن نطاق الخدمة</span><h2>حي ' + ESC(area) + '</h2><p>لطلب سباك أو كهربائي في حي ' + ESC(area) + '، أرسل موقع الخدمة ووصف المشكلة أو قائمة التركيبات المطلوبة. يُؤكد الموعد ونطاق العمل حسب تفاصيل الطلب.</p><div class="local-area-actions">' + button(wa('مرحبًا أمين سرور، أحتاج خدمة في حي ' + area + '. نوع الخدمة: . وصف الطلب: '), 'اطلب خدمة في ' + ESC(area), 'primary', 'chat') + '</div></article>' for i, area in enumerate(AREAS))
+    electrical_requests = {
+        'النرجس': (
+            'فحص الأعطال والقواطع',
+            'اذكر أي غرفة أو دائرة تتأثر ومتى يتكرر الفصل، وهل العطل في نقطة واحدة أو أكثر.',
+            'best-electrician-al-narjis',
+        ),
+        'الياسمين': (
+            'تركيب الثريات والسبوت لايت',
+            'أرسل عدد وحدات الإنارة ونوع السقف، ووضح إن كانت نقاط الإنارة جاهزة.',
+            'best-electrician-al-yasmin',
+        ),
+        'العارض': (
+            'تأسيس الكهرباء وإضافة الأفياش',
+            'حدد مرحلة التشطيب والغرف التي تحتاج نقاطًا جديدة، وأرسل المخطط إن توفر.',
+            'best-electrician-al-arid',
+        ),
+        'الملقا': (
+            'تجديد إنارة الغرف والمجالس',
+            'حدد الوحدات التي ترغب في استبدالها والغرف التي تحتاج فيها نقاطًا إضافية.',
+            'best-electrician-al-malqa',
+        ),
+    }
+    area_cards = []
+    for i, area in enumerate(AREAS, start=1):
+        details = ''
+        general_request = wa(f'مرحبًا أمين سرور، أحتاج خدمة في حي {area}. نوع الخدمة: . وصف الطلب: ')
+        actions = button(general_request, f'اطلب خدمة في {area}', 'primary', 'chat')
+        if area in electrical_requests:
+            service, instructions, guide = electrical_requests[area]
+            electrical_message = f'السلام عليكم، أحتاج {service} في حي {area}. وصف الطلب: '
+            plumbing_message = f'السلام عليكم، أحتاج خدمة سباكة في حي {area}. وصف الطلب: '
+            details = (
+                f'<h3>{ESC(service)}</h3><p>{ESC(instructions)}</p>'
+                f'<a class="local-text-link" href="{article_route(BY_SLUG[guide])}">'
+                f'اقرأ دليل {ESC(service)} في {ESC(area)} {icon("arrow")}</a>'
+            )
+            actions = (
+                button(wa(electrical_message), f'اطلب كهربائي في {area}', 'primary', 'chat')
+                + button(wa(plumbing_message), f'اطلب سباك في {area}', 'outline', 'chat')
+            )
+        area_cards.append(
+            f'<article class="local-path-card" id="area-{i}">'
+            '<span class="eyebrow">ضمن نطاق الخدمة</span>'
+            f'<h2>حي {ESC(area)}</h2>'
+            f'<p>أرسل موقع الخدمة في {ESC(area)} ووصف المشكلة أو قائمة التركيبات. '
+            'يُحدد نطاق العمل والموعد بعد مراجعة التفاصيل.</p>'
+            f'{details}<div class="local-area-actions">{actions}</div></article>'
+        )
     questions = [('هل يوجد فرع مستقل في كل حي؟', 'هذه الصفحة توضح مناطق خدمة، وليست إعلانًا عن فروع أو مقرات مستقلة. بيانات النشاط الحالية مرتبطة بالنرجس في الرياض، وتُنسّق الزيارات إلى مواقع العملاء.'), ('هل أحتاج كتابة سباك أو كهربائي فقط عند الطلب؟', 'الأفضل توضيح الخدمة الفعلية: تسرب تحت المغسلة، سخان يحتاج تركيبًا، فيش لا يعمل، قاطع يتكرر فصله أو ثريا تحتاج تثبيتًا، مع صورة واسم الحي.'), ('هل الوصول مضمون خلال عدد محدد من الدقائق؟', 'لا تعرض الصفحة زمن وصول ثابتًا. الموعد يتحدد عند التواصل بحسب المكان والخدمة والتوفر.'), ('كيف أطلب أكثر من عمل في زيارة واحدة؟', 'اكتب قائمة منفصلة بالأعمال المطلوبة وعدد القطع، وأرسل صور كل موضع إن أمكن. تُراجع القائمة والمواد المطلوبة ونطاق الزيارة قبل التنسيق.')]
-    return page_intro('سباك وكهربائي في شمال الرياض.', 'خدمات أمين سرور للتأسيس والصيانة والتركيب في النرجس والياسمين والعارض والملقا. هنا توضح نطاق الخدمة وتجهّز طلبك؛ لا تحتاج إلى اختيار فرع أو الاعتماد على زمن وصول غير مؤكد.', 'مناطق الخدمة') + '<section class="section"><div class="wrap"><div class="local-area-grid">' + area_cards + '</div></div></section><section class="section"><div class="wrap">' + section_heading('اختيار الخدمة يوضح الطلب', 'وش يحتاج موقعك؟', 'تعرف على نطاق أعمال السباكة والكهرباء والتفاصيل المطلوبة قبل الزيارة.') + '<div class="local-path-grid local-path-grid--two"><article class="local-path-card"><h2>سباكة المنازل والفلل</h2><p>إصلاح المواسير والوصلات والتسربات، صيانة وتركيب الأدوات الصحية والسخانات، وتأسيس وتمديدات المياه والصرف.</p>' + button('/plumber-riyadh', 'تفاصيل خدمات السباكة', 'outline', 'pipe') + '</article><article class="local-path-card"><h2>الكهرباء والإنارة</h2><p>فحص الأعطال والقواطع والأفياش، تمديد وتجديد الأسلاك، وتركيب الثريات والسبوت لايت ووحدات الإنارة.</p>' + button('/electrician-riyadh', 'تفاصيل خدمات الكهرباء', 'outline', 'bolt') + '</article></div></div></section>' + detail_faq(questions) + cta()
+    return page_intro('سباك وكهربائي في شمال الرياض.', 'خدمات أمين سرور للتأسيس والصيانة والتركيب في النرجس والياسمين والعارض والملقا. هنا توضح نطاق الخدمة وتجهّز طلبك؛ لا تحتاج إلى اختيار فرع أو الاعتماد على زمن وصول غير مؤكد.', 'مناطق الخدمة') + '<section class="section" id="service-areas"><div class="wrap"><div class="local-area-grid">' + ''.join(area_cards) + '</div></div></section><section class="section"><div class="wrap">' + section_heading('اختيار الخدمة يوضح الطلب', 'وش يحتاج موقعك؟', 'تعرف على نطاق أعمال السباكة والكهرباء والتفاصيل المطلوبة قبل الزيارة.') + '<div class="local-path-grid local-path-grid--two"><article class="local-path-card"><h2>سباكة المنازل والفلل</h2><p>إصلاح المواسير والوصلات والتسربات، صيانة وتركيب الأدوات الصحية والسخانات، وتأسيس وتمديدات المياه والصرف.</p>' + button('/plumber-riyadh', 'تفاصيل خدمات السباكة', 'outline', 'pipe') + '</article><article class="local-path-card"><h2>الكهرباء والإنارة</h2><p>فحص الأعطال والقواطع والأفياش، تمديد وتجديد الأسلاك، وتركيب الثريات والسبوت لايت ووحدات الإنارة.</p>' + button('/electrician-riyadh', 'تفاصيل خدمات الكهرباء', 'outline', 'bolt') + '</article></div></div></section>' + detail_faq(questions) + cta()
 
 
 def graph(path, title, desc):
