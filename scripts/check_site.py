@@ -124,7 +124,7 @@ def check():
             assert image is not None and file_for(urlsplit(image.text).path).is_file(), (route, 'sitemap image')
     assert len({page.title for page in pages.values()}) == len(pages), 'duplicate page titles'
     assert len({page.meta['description'] for page in pages.values()}) == len(pages), 'duplicate descriptions'
-    expected_titles = ['افضل سباك', 'أفضل سباك في النرجس', 'افضل سباك في العارض', 'افضل سباك في الياسمين', 'افصل سباك في الملقا', 'افضل كهربائي', 'افضل كهربائي في النرجس', 'افضل كهربائي في الياسمين', 'افضل كهربائي في العارض', 'افضل كهربائي في الملقا', 'تأسيس سباكة', 'تصليح سباكة']
+    expected_titles = ['افضل سباك', 'أفضل سباك في النرجس', 'افضل سباك في العارض', 'افضل سباك في الياسمين', 'تجديد سباكة الحمامات في الملقا', 'افضل كهربائي', 'افضل كهربائي في النرجس', 'افضل كهربائي في الياسمين', 'افضل كهربائي في العارض', 'افضل كهربائي في الملقا', 'تأسيس سباكة', 'تصليح سباكة']
     assert [post['title'] for post in POSTS] == expected_titles
     assert len(BY_SLUG) == len(POSTS) == 12
     photos = {photo['key']: photo for photo in json.loads((ROOT / 'service-media.json').read_text())['photos']}
