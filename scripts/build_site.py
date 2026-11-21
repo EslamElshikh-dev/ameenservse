@@ -64,7 +64,8 @@ def article_archive():
 def article_page(post):
     category = 'السباكة' if post['category'] == 'plumbing' else 'الكهرباء والإنارة'
     service = '/plumber-riyadh' if post['category'] == 'plumbing' else '/electrician-riyadh'
-    request = wa('مرحبًا أمين سرور، قرأت مقال ' + post['title'] + ' وأرغب في تنسيق الخدمة. الحي: ' + post['area'] + '. تفاصيل الطلب: ')
+    default_request = 'مرحبًا أمين سرور، قرأت مقال ' + post['title'] + ' وأرغب في تنسيق الخدمة. الحي: ' + post['area'] + '. تفاصيل الطلب: '
+    request = wa(post.get('request_message', default_request))
     toc = ''.join(f'<li><a href="#article-{section_id}"><span>{i + 1:02}</span>{ESC(heading)}</a></li>' for i, (section_id, heading, _) in enumerate(post['sections']))
     sections = ''
     for i, (section_id, heading, content) in enumerate(post['sections']):
@@ -381,26 +382,30 @@ def category_page(category):
     return page_intro(title, intro, 'خدمات السباكة' if plumbing else 'خدمات الكهرباء') + '<section class="section"><div class="wrap local-request"><div><span class="eyebrow">من أول تواصل، خلّ الطلب واضح</span><h2>حدد الخدمة والموقع قبل الزيارة.</h2><p>خدمة إصلاح قائمة تختلف عن تركيب جديد أو تأسيس. اذكر نوع الموقع، وصور الحالة عند الإمكان، والقطع المتوفرة لديك؛ ثم ناقش الموعد والمواد والتكلفة المتفق عليها.</p></div><div class="local-request-actions">' + button(request, 'أرسل تفاصيل طلبك على واتساب', 'primary', 'chat') + button('tel:' + PHONE, 'اتصل بأمين سرور', 'outline', 'phone') + '</div></div></section><section class="section"><div class="wrap"><h2>كيف توضح طلبك؟</h2><div class="local-path-grid">' + needs_html + '</div></div></section><section class="section services-section"><div class="wrap">' + section_heading('أعمال ضمن نطاق النشاط', 'خدمات السباكة المتاحة.' if plumbing else 'خدمات الكهرباء والإنارة.', 'صور أصلية من ملف النشاط، وتفاصيل تساعدك تختار الخدمة المناسبة. لا تعني الصورة أنها توثق الطلب نفسه أو حيًا بعينه.') + cards + '</div></section><section class="section"><div class="wrap local-coverage"><h2>نخدم أحياء شمال الرياض.</h2><p>النرجس والياسمين والعارض والملقا ضمن نطاق خدمة الرياض. تأكد من إمكانية الزيارة وموعدها عند التواصل.</p>' + button('/north-riyadh' if plumbing else '/north-riyadh#service-areas', 'تفاصيل مناطق الخدمة' if plumbing else 'جهّز طلب الكهرباء حسب الحي', 'outline', 'map') + button('/services', 'كل خدمات السباكة والكهرباء', 'outline') + '</div></section>' + service_guidance(category) + article_teasers(['best-plumber-al-narjis', 'best-plumber-al-arid', 'plumbing-repair'] if plumbing else ['best-electrician-al-narjis', 'best-electrician-al-yasmin', 'best-electrician-al-arid']) + detail_faq(faq_items) + cta()
 
 def north_riyadh_page():
-    electrical_requests = {
+    district_guides = {
         'النرجس': (
             'فحص الأعطال والقواطع',
             'اذكر أي غرفة أو دائرة تتأثر ومتى يتكرر الفصل، وهل العطل في نقطة واحدة أو أكثر.',
             'best-electrician-al-narjis',
+            'best-plumber-al-narjis',
         ),
         'الياسمين': (
             'تركيب الثريات والسبوت لايت',
             'أرسل عدد وحدات الإنارة ونوع السقف، ووضح إن كانت نقاط الإنارة جاهزة.',
             'best-electrician-al-yasmin',
+            'best-plumber-al-yasmin',
         ),
         'العارض': (
             'تأسيس الكهرباء وإضافة الأفياش',
             'حدد مرحلة التشطيب والغرف التي تحتاج نقاطًا جديدة، وأرسل المخطط إن توفر.',
             'best-electrician-al-arid',
+            'best-plumber-al-arid',
         ),
         'الملقا': (
             'تجديد إنارة الغرف والمجالس',
             'حدد الوحدات التي ترغب في استبدالها والغرف التي تحتاج فيها نقاطًا إضافية.',
             'best-electrician-al-malqa',
+            'best-plumber-al-malqa',
         ),
     }
     area_cards = []
@@ -408,14 +413,17 @@ def north_riyadh_page():
         details = ''
         general_request = wa(f'مرحبًا أمين سرور، أحتاج خدمة في حي {area}. نوع الخدمة: . وصف الطلب: ')
         actions = button(general_request, f'اطلب خدمة في {area}', 'primary', 'chat')
-        if area in electrical_requests:
-            service, instructions, guide = electrical_requests[area]
-            electrical_message = f'السلام عليكم، أحتاج {service} في حي {area}. وصف الطلب: '
+        if area in district_guides:
+            service, instructions, electrical_guide, plumbing_guide = district_guides[area]
+            electrical_message = f'السلام عليكم، أحتاج كهربائي في حي {area}. ممكن أنسّق زيارة؟\nتفاصيل الطلب '
             plumbing_message = f'السلام عليكم، أحتاج خدمة سباكة في حي {area}. وصف الطلب: '
             details = (
                 f'<h3>{ESC(service)}</h3><p>{ESC(instructions)}</p>'
-                f'<a class="local-text-link" href="{article_route(BY_SLUG[guide])}">'
-                f'اقرأ دليل {ESC(service)} في {ESC(area)} {icon("arrow")}</a>'
+                f'<nav class="local-area-actions local-request-actions" aria-label="أدلة الخدمة في {ESC(area)}">'
+                f'<a class="local-text-link" href="{article_route(BY_SLUG[electrical_guide])}">'
+                f'دليل الكهرباء في {ESC(area)} {icon("arrow")}</a>'
+                f'<a class="local-text-link" href="{article_route(BY_SLUG[plumbing_guide])}">'
+                f'دليل السباكة في {ESC(area)} {icon("arrow")}</a></nav>'
             )
             actions = (
                 button(wa(electrical_message), f'اطلب كهربائي في {area}', 'primary', 'chat')
