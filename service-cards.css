@@ -65,9 +65,10 @@
 .catalog-heading .eyebrow { font-size: .66rem; margin-bottom: 5px; }
 .catalog-heading h2 { font-size: 1.35rem; line-height: 1.7; }
 .filter-status { flex-shrink: 0; padding: 6px 11px; border-radius: 7px; background: #e8f1f7; color: #42677e; font-size: .66rem; }
-.catalog-controls { display: flex; gap: 18px; align-items: center; }
+.catalog-controls { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; }
+.service-area { flex: 0 1 180px; min-width: 150px; }
 .service-search { flex: 1; min-width: 190px; }
-.service-search input {
+.service-search input, .service-area select {
   width: 100%; min-height: 48px; padding: 11px 15px;
   border: 1px solid #ccdde8; border-radius: 10px; background: #fff;
   color: #143348; font-size: .76rem; appearance: auto;
@@ -151,7 +152,7 @@
   .catalog-heading h2 { font-size: 1.18rem; }
   .catalog-heading .eyebrow { font-size: .6rem; }
   .catalog-controls { flex-direction: column; align-items: stretch; gap: 12px; }
-  .service-search { min-width: 0; }
+  .service-search, .service-area { flex: auto; min-width: 0; }
   .service-filters { margin: 0; }
   .service-filters button { flex: 1; justify-content: center; }
   .service-copy { padding: 20px; }
@@ -181,7 +182,7 @@
   .catalog-heading h2 { font-size: 1.03rem; }
   .catalog-heading .eyebrow { font-size: .52rem; }
   .filter-status { font-size: .58rem; padding: 5px 7px; }
-  .service-search input { font-size: 16px; }
+  .service-search input, .service-area select { font-size: 16px; }
   .service-filters { gap: 6px; }
   .service-filters button { min-height: 46px; padding: 10px 8px; font-size: .6rem; gap: 5px; }
   .service-filters button span { padding: 2px 4px; font-size: 9px; }
