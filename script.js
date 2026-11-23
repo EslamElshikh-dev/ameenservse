@@ -25,6 +25,7 @@
     if (!event.target.closest('.header-inner')) closeMenu();
   });
   window.matchMedia('(min-width: 921px)').addEventListener?.('change', closeMenu);
+  const pageParams = new URLSearchParams(location.search);
   const filters = [...document.querySelectorAll('[data-filter]')];
   const cards = [...document.querySelectorAll('.service-catalog [data-category]')];
   const filterStatus = document.querySelector('.filter-status');
@@ -56,17 +57,32 @@
     applyServiceFilters();
     serviceSearch?.focus();
   });
+  const serviceArea = document.getElementById('service-area');
+  if (serviceArea) {
+    const requestedArea = pageParams.get('area');
+    if (!serviceArea.value && [...serviceArea.options].some(option => option.value === requestedArea)) {
+      serviceArea.value = requestedArea;
+    }
+    const serviceOrders = [...document.querySelectorAll('.service-catalog .service-order[data-service-name]')];
+    const updateServiceRequests = () => {
+      serviceOrders.forEach(link => {
+        const message = `السلام عليكم، أحتاج خدمة ${link.dataset.serviceName}.\nالحي في الرياض: ${serviceArea.value}\nوصف المشكلة أو العمل المطلوب: `;
+        link.href = `https://wa.me/966545350293?text=${encodeURIComponent(message)}`;
+      });
+    };
+    serviceArea.addEventListener('change', updateServiceRequests);
+    updateServiceRequests();
+  }
   const fields = ['request-service', 'request-area', 'request-details'].map(id => document.getElementById(id));
   const requestLink = document.getElementById('request-link');
   if (requestLink && fields.every(Boolean)) {
     const [service, area, details] = fields;
-    const requestParams = new URLSearchParams(location.search);
-    const requestedService = requestParams.get('service');
+    const requestedService = pageParams.get('service');
     if (service.selectedIndex === 0 && [...service.options].some(option => option.value === requestedService)) {
       service.value = requestedService;
     }
-    if (!area.value && requestParams.has('area')) {
-      area.value = requestParams.get('area').slice(0, area.maxLength);
+    if (!area.value && pageParams.has('area')) {
+      area.value = pageParams.get('area').slice(0, area.maxLength);
     }
     const updateRequest = () => {
       const message = [`مرحبًا أمين سرور، أرغب في طلب خدمة ${service.value}.`, area.value.trim() ? `الحي في الرياض: ${area.value.trim()}` : '', details.value.trim() ? `تفاصيل الطلب: ${details.value.trim()}` : ''].filter(Boolean).join('\n');
