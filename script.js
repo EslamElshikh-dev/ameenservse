@@ -60,6 +60,14 @@
   const requestLink = document.getElementById('request-link');
   if (requestLink && fields.every(Boolean)) {
     const [service, area, details] = fields;
+    const requestParams = new URLSearchParams(location.search);
+    const requestedService = requestParams.get('service');
+    if (service.selectedIndex === 0 && [...service.options].some(option => option.value === requestedService)) {
+      service.value = requestedService;
+    }
+    if (!area.value && requestParams.has('area')) {
+      area.value = requestParams.get('area').slice(0, area.maxLength);
+    }
     const updateRequest = () => {
       const message = [`مرحبًا أمين سرور، أرغب في طلب خدمة ${service.value}.`, area.value.trim() ? `الحي في الرياض: ${area.value.trim()}` : '', details.value.trim() ? `تفاصيل الطلب: ${details.value.trim()}` : ''].filter(Boolean).join('\n');
       requestLink.href = `https://wa.me/966545350293?text=${encodeURIComponent(message)}`;
