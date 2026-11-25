@@ -65,6 +65,15 @@
     }
     const serviceOrders = [...document.querySelectorAll('.service-catalog .service-order[data-service-name]')];
     const updateServiceRequests = () => {
+      const areaUrl = new URL(location.href);
+      if (serviceArea.value) {
+        areaUrl.searchParams.set('area', serviceArea.value);
+      } else {
+        areaUrl.searchParams.delete('area');
+      }
+      if (areaUrl.href !== location.href) {
+        window.history.replaceState(window.history.state, '', areaUrl.href);
+      }
       serviceOrders.forEach(link => {
         const message = `السلام عليكم، أحتاج خدمة ${link.dataset.serviceName}.\nالحي في الرياض: ${serviceArea.value}\nوصف المشكلة أو العمل المطلوب: `;
         link.href = `https://wa.me/966545350293?text=${encodeURIComponent(message)}`;
